@@ -1,0 +1,53 @@
+name: TimeTracker
+options:
+  bundleIdPrefix: com.ta21cos
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.4"
+  minimumXcodeGenVersion: "2.30"
+  projectVersion: "1"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  TimeTracker:
+    type: application
+    platform: macOS
+    sources:
+      - TimeTracker
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.TimeTracker
+        INFOPLIST_FILE: TimeTracker/Info.plist
+        CODE_SIGN_ENTITLEMENTS: TimeTracker/TimeTracker.entitlements
+        CODE_SIGN_IDENTITY: "-"
+        PRODUCT_NAME: TimeTracker
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - "@executable_path/../Frameworks"
+      configs:
+        Debug:
+          ENABLE_HARDENED_RUNTIME: NO
+        Release:
+          ENABLE_HARDENED_RUNTIME: YES
+    entitlements:
+      path: TimeTracker/TimeTracker.entitlements
+
+  TimeTrackerTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests/TimeTrackerTests
+    dependencies:
+      - target: TimeTracker
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.TimeTrackerTests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_IDENTITY: "-"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TimeTracker.app/Contents/MacOS/TimeTracker"
