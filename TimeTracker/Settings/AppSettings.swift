@@ -1,29 +1,61 @@
 import Foundation
-import SwiftUI
 
 @Observable
 final class AppSettings {
-    @ObservationIgnored
-    @AppStorage("workDurationMinutes") var workDurationMinutes: Int = Constants.Defaults.workDurationMinutes
+    private static let defaults = UserDefaults.standard
 
-    @ObservationIgnored
-    @AppStorage("breakDurationMinutes") var breakDurationMinutes: Int = Constants.Defaults.breakDurationMinutes
+    var workDurationMinutes: Int {
+        didSet { Self.defaults.set(workDurationMinutes, forKey: "workDurationMinutes") }
+    }
+    var breakDurationMinutes: Int {
+        didSet { Self.defaults.set(breakDurationMinutes, forKey: "breakDurationMinutes") }
+    }
+    var inactivityThresholdMinutes: Int {
+        didSet { Self.defaults.set(inactivityThresholdMinutes, forKey: "inactivityThresholdMinutes") }
+    }
+    var breakResetThresholdMinutes: Int {
+        didSet { Self.defaults.set(breakResetThresholdMinutes, forKey: "breakResetThresholdMinutes") }
+    }
+    var snoozeDurationMinutes: Int {
+        didSet { Self.defaults.set(snoozeDurationMinutes, forKey: "snoozeDurationMinutes") }
+    }
+    var launchAtLogin: Bool {
+        didSet { Self.defaults.set(launchAtLogin, forKey: "launchAtLogin") }
+    }
+    var soundEnabled: Bool {
+        didSet { Self.defaults.set(soundEnabled, forKey: "soundEnabled") }
+    }
+    var hasCompletedOnboarding: Bool {
+        didSet { Self.defaults.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding") }
+    }
 
-    @ObservationIgnored
-    @AppStorage("inactivityThresholdMinutes") var inactivityThresholdMinutes: Int = Constants.Defaults.inactivityThresholdMinutes
+    init() {
+        let d = Self.defaults
+        let has = { (key: String) -> Bool in d.object(forKey: key) != nil }
 
-    @ObservationIgnored
-    @AppStorage("breakResetThresholdMinutes") var breakResetThresholdMinutes: Int = Constants.Defaults.breakResetThresholdMinutes
-
-    @ObservationIgnored
-    @AppStorage("snoozeDurationMinutes") var snoozeDurationMinutes: Int = Constants.Defaults.snoozeDurationMinutes
-
-    @ObservationIgnored
-    @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
-
-    @ObservationIgnored
-    @AppStorage("soundEnabled") var soundEnabled: Bool = true
-
-    @ObservationIgnored
-    @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+        self.workDurationMinutes = has("workDurationMinutes")
+            ? d.integer(forKey: "workDurationMinutes")
+            : Constants.Defaults.workDurationMinutes
+        self.breakDurationMinutes = has("breakDurationMinutes")
+            ? d.integer(forKey: "breakDurationMinutes")
+            : Constants.Defaults.breakDurationMinutes
+        self.inactivityThresholdMinutes = has("inactivityThresholdMinutes")
+            ? d.integer(forKey: "inactivityThresholdMinutes")
+            : Constants.Defaults.inactivityThresholdMinutes
+        self.breakResetThresholdMinutes = has("breakResetThresholdMinutes")
+            ? d.integer(forKey: "breakResetThresholdMinutes")
+            : Constants.Defaults.breakResetThresholdMinutes
+        self.snoozeDurationMinutes = has("snoozeDurationMinutes")
+            ? d.integer(forKey: "snoozeDurationMinutes")
+            : Constants.Defaults.snoozeDurationMinutes
+        self.launchAtLogin = has("launchAtLogin")
+            ? d.bool(forKey: "launchAtLogin")
+            : false
+        self.soundEnabled = has("soundEnabled")
+            ? d.bool(forKey: "soundEnabled")
+            : true
+        self.hasCompletedOnboarding = has("hasCompletedOnboarding")
+            ? d.bool(forKey: "hasCompletedOnboarding")
+            : false
+    }
 }
