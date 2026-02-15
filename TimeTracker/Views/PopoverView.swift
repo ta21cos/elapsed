@@ -71,8 +71,8 @@ struct PopoverView: View {
 
             Spacer()
 
-            Button("設定") {
-                openSettings()
+            SettingsLink {
+                Text("設定")
             }
             .accessibilityLabel("設定画面を開く")
 
@@ -134,11 +134,4 @@ struct PopoverView: View {
         }
     }
 
-    private func openSettings() {
-        if #available(macOS 14.0, *) {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-        } else {
-            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-        }
-    }
 }
