@@ -2,8 +2,8 @@ import SwiftUI
 
 enum MenuBarIconProvider {
     static func warningThresholdSeconds(workDurationMinutes: Int) -> Int {
-        max(Constants.Defaults.minimumWarningMinutes,
-            workDurationMinutes - Constants.Defaults.warningBufferMinutes) * 60
+        let buffer = min(Constants.Defaults.warningBufferMinutes, workDurationMinutes - 1)
+        return max(0, workDurationMinutes - max(buffer, 0)) * 60
     }
 
     static func icon(

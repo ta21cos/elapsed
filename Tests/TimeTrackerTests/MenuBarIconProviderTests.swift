@@ -25,13 +25,21 @@ final class MenuBarIconProviderTests: XCTestCase {
     }
 
     func testWarningThresholdDynamic() {
+        // workDuration=30: buffer=min(10, 29)=10, threshold=(30-10)*60=1200
         let threshold = MenuBarIconProvider.warningThresholdSeconds(workDurationMinutes: 30)
-        XCTAssertEqual(threshold, 1200) // (30-10) * 60
+        XCTAssertEqual(threshold, 1200)
     }
 
-    func testWarningThresholdMinimum() {
-        let threshold = MenuBarIconProvider.warningThresholdSeconds(workDurationMinutes: 15)
-        XCTAssertEqual(threshold, 600) // max(10, 15-10) * 60 = 10 * 60
+    func testWarningThresholdSmallDuration() {
+        // workDuration=3: buffer=min(10, 2)=2, threshold=(3-2)*60=60
+        let threshold = MenuBarIconProvider.warningThresholdSeconds(workDurationMinutes: 3)
+        XCTAssertEqual(threshold, 60)
+    }
+
+    func testWarningThresholdMinimumOneMiute() {
+        // workDuration=1: buffer=min(10, 0)=0, threshold=(1-0)*60=60
+        let threshold = MenuBarIconProvider.warningThresholdSeconds(workDurationMinutes: 1)
+        XCTAssertEqual(threshold, 60)
     }
 
     func testOnBreak() {

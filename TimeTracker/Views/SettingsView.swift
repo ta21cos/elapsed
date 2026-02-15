@@ -61,8 +61,7 @@ struct TimingSettingsView: View {
                 Stepper(
                     "休憩通知までの作業時間: \(settings.workDurationMinutes)分",
                     value: $settings.workDurationMinutes,
-                    in: 20...120,
-                    step: 5
+                    in: 1...120
                 )
                 .accessibilityLabel("休憩通知までの作業時間")
                 .accessibilityValue("\(settings.workDurationMinutes)分")
@@ -70,8 +69,7 @@ struct TimingSettingsView: View {
                 Stepper(
                     "推奨休憩時間: \(settings.breakDurationMinutes)分",
                     value: $settings.breakDurationMinutes,
-                    in: 5...30,
-                    step: 5
+                    in: 1...30
                 )
                 .accessibilityLabel("推奨休憩時間")
                 .accessibilityValue("\(settings.breakDurationMinutes)分")
@@ -89,8 +87,7 @@ struct TimingSettingsView: View {
                 Stepper(
                     "休憩リセット判定: \(settings.breakResetThresholdMinutes)分",
                     value: $settings.breakResetThresholdMinutes,
-                    in: 5...30,
-                    step: 5
+                    in: 1...30
                 )
                 .accessibilityLabel("休憩リセット判定閾値")
                 .accessibilityValue("\(settings.breakResetThresholdMinutes)分")
