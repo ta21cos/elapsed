@@ -9,8 +9,9 @@ final class BreakReminderService {
     }
 
     private let sessionManager: SessionManager
-    private let notificationService: NotificationService
+    private var notificationService: any NotificationSending
     private let settings: AppSettings
+    private let clock: Clock
 
     private(set) var breakState: BreakState = .working
     private(set) var breakTimeRemaining: TimeInterval = 0
@@ -26,12 +27,14 @@ final class BreakReminderService {
 
     init(
         sessionManager: SessionManager,
-        notificationService: NotificationService,
-        settings: AppSettings
+        notificationService: any NotificationSending,
+        settings: AppSettings,
+        clock: Clock = SystemClock()
     ) {
         self.sessionManager = sessionManager
         self.notificationService = notificationService
         self.settings = settings
+        self.clock = clock
         setupNotificationCallbacks()
     }
 
@@ -49,19 +52,14 @@ final class BreakReminderService {
 
     func startBreak() {
         breakState = .onBreak
-        breakStartTime = Date()
+        breakStartTime = clock.now
         breakTimeRemaining = TimeInterval(settings.breakDurationMinutes * 60)
 
         breakTimer = Timer.scheduledTimer(
             withTimeInterval: Constants.Polling.streakUpdateIntervalSeconds,
             repeats: true
         ) { [weak self] _ in
-            guard let self else { return }
-            self.breakTimeRemaining -= 1
-
-            if self.breakTimeRemaining <= 0 {
-                self.endBreak(countAsBreak: true)
-            }
+            self?.tickBreak()
         }
         breakTimer?.tolerance = 0.5
     }
@@ -74,7 +72,7 @@ final class BreakReminderService {
         if let explicit = countAsBreak {
             shouldCount = explicit
         } else if let start = breakStartTime {
-            let elapsed = Date().timeIntervalSince(start)
+            let elapsed = clock.now.timeIntervalSince(start)
             let threshold = TimeInterval(settings.breakResetThresholdMinutes * 60)
             shouldCount = elapsed >= threshold
         } else {
@@ -110,6 +108,14 @@ final class BreakReminderService {
         breakState = .working
         breakTimeRemaining = 0
         breakStartTime = nil
+    }
+
+    func tickBreak() {
+        breakTimeRemaining -= 1
+
+        if breakTimeRemaining <= 0 {
+            endBreak(countAsBreak: true)
+        }
     }
 
     private func setupNotificationCallbacks() {

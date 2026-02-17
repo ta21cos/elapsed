@@ -2,8 +2,12 @@ import XCTest
 @testable import TimeTracker
 
 final class TimeFormatterTests: XCTestCase {
-    func testFormatDurationMinutesOnly() {
-        XCTAssertEqual(TimeFormatter.formatDuration(300), "5分")
+    func testFormatDurationMinutesAndSeconds() {
+        XCTAssertEqual(TimeFormatter.formatDuration(300), "5分0秒")
+    }
+
+    func testFormatDurationMinutesWithSeconds() {
+        XCTAssertEqual(TimeFormatter.formatDuration(125), "2分5秒")
     }
 
     func testFormatDurationHoursAndMinutes() {
@@ -11,7 +15,11 @@ final class TimeFormatterTests: XCTestCase {
     }
 
     func testFormatDurationZero() {
-        XCTAssertEqual(TimeFormatter.formatDuration(0), "0分")
+        XCTAssertEqual(TimeFormatter.formatDuration(0), "0秒")
+    }
+
+    func testFormatDurationSecondsOnly() {
+        XCTAssertEqual(TimeFormatter.formatDuration(45), "45秒")
     }
 
     func testFormatCountdown() {

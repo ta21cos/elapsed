@@ -1,7 +1,13 @@
 import AppKit
 
+protocol SystemStateMonitoring: AnyObject {
+    var onSystemEvent: ((SystemStateMonitor.SystemEvent) -> Void)? { get set }
+    func start()
+    func stop()
+}
+
 @Observable
-final class SystemStateMonitor {
+final class SystemStateMonitor: SystemStateMonitoring {
     enum SystemEvent {
         case screenLocked
         case screenUnlocked

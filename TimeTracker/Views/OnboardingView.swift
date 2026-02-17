@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Environment(AppSettings.self) private var settings
+    @Environment(\.dismiss) private var dismiss
     @State private var currentStep = 0
     @State private var accessibilityGranted = false
     @State private var notificationGranted = false
@@ -172,6 +173,7 @@ struct OnboardingView: View {
             Button("始める") {
                 settings.hasCompletedOnboarding = true
                 onComplete()
+                dismiss()
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)

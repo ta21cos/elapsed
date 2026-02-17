@@ -45,9 +45,11 @@ final class AppCoordinator {
         notificationService.setup()
         setupActivityCallbacks()
         startIconUpdate()
+
+        startIfNeeded()
     }
 
-    func onAppear() {
+    func startIfNeeded() {
         guard !hasStarted else { return }
         hasStarted = true
 
@@ -91,5 +93,9 @@ final class AppCoordinator {
             streakSeconds: sessionManager.currentStreakSeconds,
             workDurationMinutes: settings.workDurationMinutes
         )
+
+        if sessionManager.isTracking && activityMonitor.state == .active {
+            breakReminder.checkAndNotify()
+        }
     }
 }

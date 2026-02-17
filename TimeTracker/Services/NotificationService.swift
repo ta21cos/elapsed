@@ -4,6 +4,8 @@ protocol NotificationSending {
     func sendBreakReminder(streakMinutes: Int)
     func sendReturnNotification()
     func cancelPendingNotifications()
+    var onTakeBreak: (() -> Void)? { get set }
+    var onSnooze: (() -> Void)? { get set }
 }
 
 final class NotificationService: NSObject, UNUserNotificationCenterDelegate, NotificationSending {

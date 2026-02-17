@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct TimeTrackerApp: App {
     @State private var appCoordinator: AppCoordinator
+    @Environment(\.openWindow) private var openWindow
 
     init() {
         let coordinator = AppCoordinator()
@@ -18,7 +19,9 @@ struct TimeTrackerApp: App {
                 .environment(appCoordinator.settings)
                 .modelContainer(appCoordinator.modelContainer)
                 .onAppear {
-                    appCoordinator.onAppear()
+                    if !appCoordinator.settings.hasCompletedOnboarding {
+                        openWindow(id: "onboarding")
+                    }
                 }
         } label: {
             Image(systemName: appCoordinator.currentMenuBarIcon)

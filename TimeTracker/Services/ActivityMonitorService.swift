@@ -8,8 +8,9 @@ final class ActivityMonitorService {
     }
 
     private let inputMonitor: InputEventMonitoring
-    private let systemMonitor: SystemStateMonitor
+    private let systemMonitor: any SystemStateMonitoring
     private let settings: AppSettings
+    private let clock: Clock
     private var pollingTimer: Timer?
 
     private(set) var state: ActivityState = .inactive
@@ -19,11 +20,13 @@ final class ActivityMonitorService {
     init(
         settings: AppSettings,
         inputMonitor: InputEventMonitoring? = nil,
-        systemMonitor: SystemStateMonitor? = nil
+        systemMonitor: (any SystemStateMonitoring)? = nil,
+        clock: Clock = SystemClock()
     ) {
         self.settings = settings
         self.inputMonitor = inputMonitor ?? InputEventMonitor()
         self.systemMonitor = systemMonitor ?? SystemStateMonitor()
+        self.clock = clock
         setupSystemMonitorCallbacks()
     }
 
@@ -42,6 +45,7 @@ final class ActivityMonitorService {
     }
 
     private func startPolling() {
+        evaluateActivity()
         pollingTimer = Timer.scheduledTimer(
             withTimeInterval: Constants.Polling.intervalSeconds,
             repeats: true
@@ -51,9 +55,9 @@ final class ActivityMonitorService {
         pollingTimer?.tolerance = 2.0
     }
 
-    private func evaluateActivity() {
+    func evaluateActivity() {
         lastInputTime = inputMonitor.lastInputTime
-        let elapsed = Date().timeIntervalSince(lastInputTime)
+        let elapsed = clock.now.timeIntervalSince(lastInputTime)
         let threshold = TimeInterval(settings.inactivityThresholdMinutes * 60)
 
         let newState: ActivityState = elapsed > threshold ? .inactive : .active

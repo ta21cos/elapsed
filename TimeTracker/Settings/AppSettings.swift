@@ -2,35 +2,36 @@ import Foundation
 
 @Observable
 final class AppSettings {
-    private static let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
 
     var workDurationMinutes: Int {
-        didSet { Self.defaults.set(workDurationMinutes, forKey: "workDurationMinutes") }
+        didSet { defaults.set(workDurationMinutes, forKey: "workDurationMinutes") }
     }
     var breakDurationMinutes: Int {
-        didSet { Self.defaults.set(breakDurationMinutes, forKey: "breakDurationMinutes") }
+        didSet { defaults.set(breakDurationMinutes, forKey: "breakDurationMinutes") }
     }
     var inactivityThresholdMinutes: Int {
-        didSet { Self.defaults.set(inactivityThresholdMinutes, forKey: "inactivityThresholdMinutes") }
+        didSet { defaults.set(inactivityThresholdMinutes, forKey: "inactivityThresholdMinutes") }
     }
     var breakResetThresholdMinutes: Int {
-        didSet { Self.defaults.set(breakResetThresholdMinutes, forKey: "breakResetThresholdMinutes") }
+        didSet { defaults.set(breakResetThresholdMinutes, forKey: "breakResetThresholdMinutes") }
     }
     var snoozeDurationMinutes: Int {
-        didSet { Self.defaults.set(snoozeDurationMinutes, forKey: "snoozeDurationMinutes") }
+        didSet { defaults.set(snoozeDurationMinutes, forKey: "snoozeDurationMinutes") }
     }
     var launchAtLogin: Bool {
-        didSet { Self.defaults.set(launchAtLogin, forKey: "launchAtLogin") }
+        didSet { defaults.set(launchAtLogin, forKey: "launchAtLogin") }
     }
     var soundEnabled: Bool {
-        didSet { Self.defaults.set(soundEnabled, forKey: "soundEnabled") }
+        didSet { defaults.set(soundEnabled, forKey: "soundEnabled") }
     }
     var hasCompletedOnboarding: Bool {
-        didSet { Self.defaults.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding") }
+        didSet { defaults.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding") }
     }
 
-    init() {
-        let d = Self.defaults
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        let d = defaults
         let has = { (key: String) -> Bool in d.object(forKey: key) != nil }
 
         self.workDurationMinutes = has("workDurationMinutes")
