@@ -24,7 +24,13 @@ struct TimeTrackerApp: App {
                     }
                 }
         } label: {
-            Image(systemName: appCoordinator.currentMenuBarIcon)
+            Label {
+                if !appCoordinator.currentMenuBarTitle.isEmpty {
+                    Text(appCoordinator.currentMenuBarTitle)
+                }
+            } icon: {
+                Image(systemName: appCoordinator.currentMenuBarIcon)
+            }
         }
         .menuBarExtraStyle(.window)
 
@@ -33,6 +39,8 @@ struct TimeTrackerApp: App {
                 .environment(appCoordinator.settings)
                 .environment(appCoordinator.sessionManager)
                 .environment(appCoordinator.breakReminder)
+                .environment(appCoordinator.activityMonitor)
+                .modelContainer(appCoordinator.modelContainer)
         }
 
         Window("セットアップ", id: "onboarding") {

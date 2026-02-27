@@ -10,7 +10,6 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.workDurationMinutes, Constants.Defaults.workDurationMinutes)
         XCTAssertEqual(settings.breakDurationMinutes, Constants.Defaults.breakDurationMinutes)
         XCTAssertEqual(settings.inactivityThresholdMinutes, Constants.Defaults.inactivityThresholdMinutes)
-        XCTAssertEqual(settings.breakResetThresholdMinutes, Constants.Defaults.breakResetThresholdMinutes)
         XCTAssertEqual(settings.snoozeDurationMinutes, Constants.Defaults.snoozeDurationMinutes)
         XCTAssertTrue(settings.soundEnabled)
         XCTAssertFalse(settings.hasCompletedOnboarding)
@@ -39,14 +38,12 @@ final class AppSettingsTests: XCTestCase {
             workDuration: 25,
             breakDuration: 5,
             inactivityThreshold: 3,
-            breakResetThreshold: 5,
             snoozeDuration: 10
         )
 
         XCTAssertEqual(settings.workDurationMinutes, 25)
         XCTAssertEqual(settings.breakDurationMinutes, 5)
         XCTAssertEqual(settings.inactivityThresholdMinutes, 3)
-        XCTAssertEqual(settings.breakResetThresholdMinutes, 5)
         XCTAssertEqual(settings.snoozeDurationMinutes, 10)
     }
 }

@@ -13,9 +13,6 @@ final class AppSettings {
     var inactivityThresholdMinutes: Int {
         didSet { defaults.set(inactivityThresholdMinutes, forKey: "inactivityThresholdMinutes") }
     }
-    var breakResetThresholdMinutes: Int {
-        didSet { defaults.set(breakResetThresholdMinutes, forKey: "breakResetThresholdMinutes") }
-    }
     var snoozeDurationMinutes: Int {
         didSet { defaults.set(snoozeDurationMinutes, forKey: "snoozeDurationMinutes") }
     }
@@ -43,9 +40,6 @@ final class AppSettings {
         self.inactivityThresholdMinutes = has("inactivityThresholdMinutes")
             ? d.integer(forKey: "inactivityThresholdMinutes")
             : Constants.Defaults.inactivityThresholdMinutes
-        self.breakResetThresholdMinutes = has("breakResetThresholdMinutes")
-            ? d.integer(forKey: "breakResetThresholdMinutes")
-            : Constants.Defaults.breakResetThresholdMinutes
         self.snoozeDurationMinutes = has("snoozeDurationMinutes")
             ? d.integer(forKey: "snoozeDurationMinutes")
             : Constants.Defaults.snoozeDurationMinutes

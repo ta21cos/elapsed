@@ -13,7 +13,9 @@ final class AppCoordinator {
     let breakReminder: BreakReminderService
 
     private(set) var currentMenuBarIcon: String = Constants.Icon.activeNormal
+    private(set) var currentMenuBarTitle: String = ""
     private var iconUpdateTimer: Timer?
+    private var activityToken: NSObjectProtocol?
     private var hasStarted = false
 
     init() {
@@ -59,6 +61,10 @@ final class AppCoordinator {
     }
 
     func startMonitoring() {
+        activityToken = ProcessInfo.processInfo.beginActivity(
+            options: [.userInitiated, .idleSystemSleepDisabled],
+            reason: "Monitoring user activity for time tracking"
+        )
         activityMonitor.start()
     }
 
@@ -69,20 +75,23 @@ final class AppCoordinator {
             guard let self else { return }
             self.sessionManager.handleActivityChange(state)
 
-            if state == .active {
+            switch state {
+            case .active:
                 self.breakReminder.checkAndNotify()
+            case .inactive:
+                self.breakReminder.reset()
             }
         }
     }
 
     private func startIconUpdate() {
         iconUpdateTimer = Timer.scheduledTimer(
-            withTimeInterval: 2.0,
+            withTimeInterval: 1.0,
             repeats: true
         ) { [weak self] _ in
             self?.updateMenuBarIcon()
         }
-        iconUpdateTimer?.tolerance = 1.0
+        iconUpdateTimer?.tolerance = 0.5
     }
 
     private func updateMenuBarIcon() {
@@ -90,9 +99,15 @@ final class AppCoordinator {
             breakState: breakReminder.breakState,
             activityState: activityMonitor.state,
             isTracking: sessionManager.isTracking,
-            streakSeconds: sessionManager.currentStreakSeconds,
+            sessionSeconds: sessionManager.currentSessionSeconds,
             workDurationMinutes: settings.workDurationMinutes
         )
+
+        if sessionManager.isTracking, sessionManager.currentSession != nil {
+            currentMenuBarTitle = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds)
+        } else {
+            currentMenuBarTitle = ""
+        }
 
         if sessionManager.isTracking && activityMonitor.state == .active {
             breakReminder.checkAndNotify()

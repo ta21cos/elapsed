@@ -33,59 +33,50 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(sut.currentSession?.isActive, true)
     }
 
-    func testStreakAdvancesWithClock() {
+    func testSessionSecondsAdvancesWithClock() {
         sut.handleActivityChange(.active)
         clock.advance(by: 120)
-        sut.updateStreak()
-        XCTAssertEqual(sut.currentStreakSeconds, 120)
+        sut.updateSession()
+        XCTAssertEqual(sut.currentSessionSeconds, 120)
     }
 
-    func testShortInactivityPreservesStreak() {
+    func testInactiveEndsSession() {
         sut.handleActivityChange(.active)
-        clock.advance(by: 100)
-        sut.updateStreak()
-        let streakBefore = sut.currentStreakSeconds
-
-        sut.handleActivityChange(.inactive)
-        clock.advance(by: 60)
-        sut.handleActivityChange(.active)
-
-        XCTAssertGreaterThanOrEqual(sut.currentStreakSeconds, streakBefore)
-    }
-
-    func testLongInactivityResetsStreakAndCountsBreak() {
-        sut.handleActivityChange(.active)
+        let session = sut.currentSession
         clock.advance(by: 300)
-        sut.updateStreak()
+        sut.updateSession()
 
         sut.handleActivityChange(.inactive)
-        clock.advance(by: TimeInterval(settings.breakResetThresholdMinutes * 60))
-        sut.handleActivityChange(.active)
 
-        XCTAssertEqual(sut.currentStreakSeconds, 0)
-        XCTAssertEqual(sut.currentSession?.breaksTaken, 1)
+        XCTAssertNil(sut.currentSession)
+        XCTAssertEqual(sut.currentSessionSeconds, 0)
+        XCTAssertNotNil(session?.endTime)
+        XCTAssertEqual(session?.isActive, false)
+        XCTAssertEqual(session?.activeSeconds, 300)
     }
 
-    func testLongestStreakRecorded() {
+    func testReactivationCreatesNewSession() {
         sut.handleActivityChange(.active)
-        clock.advance(by: 500)
-        sut.updateStreak()
+        let firstSession = sut.currentSession
 
         sut.handleActivityChange(.inactive)
+        sut.handleActivityChange(.active)
+        let secondSession = sut.currentSession
 
-        XCTAssertEqual(sut.currentSession?.longestStreakSeconds, 500)
+        XCTAssertNotNil(secondSession)
+        XCTAssertNotEqual(firstSession?.id, secondSession?.id)
     }
 
     func testEndSessionSetsEndTime() {
         sut.handleActivityChange(.active)
         let session = sut.currentSession
-        XCTAssertNotNil(session)
 
         clock.advance(by: 60)
         sut.endCurrentSession()
 
         XCTAssertNotNil(session?.endTime)
         XCTAssertEqual(session?.isActive, false)
+        XCTAssertEqual(session?.activeSeconds, 60)
         XCTAssertNil(sut.currentSession)
     }
 
@@ -98,12 +89,12 @@ final class SessionManagerTests: XCTestCase {
     func testDailySummaryAccumulatesAcrossSessions() {
         sut.handleActivityChange(.active)
         clock.advance(by: 10)
-        sut.updateStreak()
+        sut.updateSession()
         sut.endCurrentSession()
 
         sut.handleActivityChange(.active)
         clock.advance(by: 20)
-        sut.updateStreak()
+        sut.updateSession()
         sut.endCurrentSession()
 
         let summary = sut.todaySummary
@@ -130,16 +121,6 @@ final class SessionManagerTests: XCTestCase {
 
         XCTAssertFalse(staleSession.isActive)
         XCTAssertNotNil(staleSession.endTime)
-    }
-
-    func testInactiveSecondsTracked() {
-        sut.handleActivityChange(.active)
-
-        sut.handleActivityChange(.inactive)
-        clock.advance(by: 120)
-        sut.handleActivityChange(.active)
-
-        XCTAssertEqual(sut.currentSession?.inactiveSeconds, 120)
     }
 
     func testSessionCountIncrements() {

@@ -53,7 +53,7 @@ struct WorkProgressView: View {
             .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("連続作業時間")
+                Text("セッション")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Text(TimeFormatter.formatDuration(Int(elapsed)))
@@ -65,42 +65,6 @@ struct WorkProgressView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("連続作業時間 \(TimeFormatter.formatDuration(Int(elapsed)))、休憩まで \(TimeFormatter.formatDuration(Int(max(0, total - elapsed))))")
-    }
-}
-
-struct BreakCountdownView: View {
-    let remaining: TimeInterval
-    let total: TimeInterval
-
-    private var progress: Double {
-        guard total > 0 else { return 0 }
-        return 1.0 - min(remaining / total, 1.0)
-    }
-
-    var body: some View {
-        HStack(spacing: 16) {
-            ProgressRingView(
-                progress: progress,
-                color: .green,
-                lineWidth: 6
-            )
-            .frame(width: 50, height: 50)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("休憩中")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(TimeFormatter.formatCountdown(Int(max(0, remaining))))
-                    .font(.system(.title3, design: .rounded))
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.green)
-                Text("リフレッシュしましょう！")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("休憩中、残り \(TimeFormatter.formatCountdown(Int(max(0, remaining))))")
+        .accessibilityLabel("セッション \(TimeFormatter.formatDuration(Int(elapsed)))、休憩まで \(TimeFormatter.formatDuration(Int(max(0, total - elapsed))))")
     }
 }

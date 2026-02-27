@@ -12,7 +12,6 @@ enum TestHelpers {
         workDuration: Int = Constants.Defaults.workDurationMinutes,
         breakDuration: Int = Constants.Defaults.breakDurationMinutes,
         inactivityThreshold: Int = Constants.Defaults.inactivityThresholdMinutes,
-        breakResetThreshold: Int = Constants.Defaults.breakResetThresholdMinutes,
         snoozeDuration: Int = Constants.Defaults.snoozeDurationMinutes
     ) -> AppSettings {
         let suiteName = "test-\(UUID().uuidString)"
@@ -21,7 +20,6 @@ enum TestHelpers {
         settings.workDurationMinutes = workDuration
         settings.breakDurationMinutes = breakDuration
         settings.inactivityThresholdMinutes = inactivityThreshold
-        settings.breakResetThresholdMinutes = breakResetThreshold
         settings.snoozeDurationMinutes = snoozeDuration
         return settings
     }

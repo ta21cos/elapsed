@@ -8,15 +8,13 @@ private let logger = Logger(subsystem: "com.ta21cos.TimeTracker", category: "Ses
 final class SessionManager {
     private let modelContext: ModelContext
     private let settings: AppSettings
-    private let clock: Clock
+    let clock: Clock
 
     private(set) var currentSession: Session?
-    private(set) var currentStreakSeconds: Int = 0
+    private(set) var currentSessionSeconds: Int = 0
     private(set) var todaySummary: DailySummary?
     private(set) var isTracking: Bool = true
 
-    private var streakStartTime: Date?
-    private var inactiveStartTime: Date?
     private var updateTimer: Timer?
 
     init(modelContext: ModelContext, settings: AppSettings, clock: Clock = SystemClock()) {
@@ -51,27 +49,22 @@ final class SessionManager {
 
         guard let session = currentSession else { return }
 
-        if currentStreakSeconds > session.longestStreakSeconds {
-            session.longestStreakSeconds = currentStreakSeconds
-        }
-
         session.endTime = clock.now
+        session.activeSeconds = Int(clock.now.timeIntervalSince(session.startTime))
         session.isActive = false
         updateDailySummary(with: session)
         save()
 
         currentSession = nil
-        currentStreakSeconds = 0
-        streakStartTime = nil
-        inactiveStartTime = nil
+        currentSessionSeconds = 0
     }
 
     // MARK: - Internal (testable)
 
-    func updateStreak() {
-        guard let start = streakStartTime else { return }
-        currentStreakSeconds = Int(clock.now.timeIntervalSince(start))
-        currentSession?.activeSeconds += 1
+    func updateSession() {
+        guard let session = currentSession else { return }
+        currentSessionSeconds = Int(clock.now.timeIntervalSince(session.startTime))
+        session.activeSeconds = currentSessionSeconds
     }
 
     // MARK: - Private
@@ -82,54 +75,19 @@ final class SessionManager {
         if currentSession == nil {
             startNewSession()
         }
-
-        if let inactiveStart = inactiveStartTime {
-            let inactiveDuration = clock.now.timeIntervalSince(inactiveStart)
-            let resetThreshold = TimeInterval(settings.breakResetThresholdMinutes * 60)
-
-            if let session = currentSession {
-                session.inactiveSeconds += Int(inactiveDuration)
-            }
-
-            if inactiveDuration >= resetThreshold {
-                currentSession?.breaksTaken += 1
-                if currentStreakSeconds > (currentSession?.longestStreakSeconds ?? 0) {
-                    currentSession?.longestStreakSeconds = currentStreakSeconds
-                }
-                currentStreakSeconds = 0
-                streakStartTime = clock.now
-            } else {
-                // Adjust streakStartTime to exclude inactive duration
-                if let start = streakStartTime {
-                    streakStartTime = start.addingTimeInterval(inactiveDuration)
-                }
-            }
-            inactiveStartTime = nil
-        }
-
-        if streakStartTime == nil {
-            streakStartTime = clock.now
-        }
-        startStreakTimer()
+        startSessionTimer()
     }
 
     private func handleBecameInactive() {
-        inactiveStartTime = clock.now
-        updateTimer?.invalidate()
-        updateTimer = nil
-
-        if let session = currentSession,
-           currentStreakSeconds > session.longestStreakSeconds {
-            session.longestStreakSeconds = currentStreakSeconds
-        }
+        endCurrentSession()
     }
 
     private func startNewSession() {
         let session = Session()
+        session.startTime = clock.now
         modelContext.insert(session)
         currentSession = session
-        streakStartTime = clock.now
-        currentStreakSeconds = 0
+        currentSessionSeconds = 0
 
         todaySummary?.sessionCount += 1
         if todaySummary?.firstSessionStart == nil {
@@ -139,13 +97,13 @@ final class SessionManager {
         save()
     }
 
-    private func startStreakTimer() {
+    private func startSessionTimer() {
         updateTimer?.invalidate()
         updateTimer = Timer.scheduledTimer(
             withTimeInterval: Constants.Polling.streakUpdateIntervalSeconds,
             repeats: true
         ) { [weak self] _ in
-            self?.updateStreak()
+            self?.updateSession()
         }
         updateTimer?.tolerance = 0.5
     }
@@ -167,11 +125,6 @@ final class SessionManager {
     private func updateDailySummary(with session: Session) {
         guard let summary = todaySummary else { return }
         summary.totalActiveSeconds += session.activeSeconds
-        summary.totalInactiveSeconds += session.inactiveSeconds
-        summary.totalBreaks += session.breaksTaken
-        if session.longestStreakSeconds > summary.longestStreakSeconds {
-            summary.longestStreakSeconds = session.longestStreakSeconds
-        }
         summary.lastSessionEnd = session.endTime
     }
 
@@ -190,7 +143,9 @@ final class SessionManager {
         guard let staleSessions = try? modelContext.fetch(descriptor) else { return }
         for session in staleSessions {
             session.isActive = false
-            session.endTime = session.endTime ?? clock.now
+            let endTime = session.endTime ?? clock.now
+            session.endTime = endTime
+            session.activeSeconds = Int(endTime.timeIntervalSince(session.startTime))
         }
         save()
     }

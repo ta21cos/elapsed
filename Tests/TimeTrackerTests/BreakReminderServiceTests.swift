@@ -13,7 +13,7 @@ final class BreakReminderServiceTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         clock = TestClock()
-        settings = TestHelpers.makeSettings(workDuration: 50, breakDuration: 10, breakResetThreshold: 10)
+        settings = TestHelpers.makeSettings(workDuration: 50, breakDuration: 10)
         container = try TestHelpers.makeModelContainer()
         let context = ModelContext(container)
         sessionManager = SessionManager(modelContext: context, settings: settings, clock: clock)
@@ -21,8 +21,7 @@ final class BreakReminderServiceTests: XCTestCase {
         sut = BreakReminderService(
             sessionManager: sessionManager,
             notificationService: notificationService,
-            settings: settings,
-            clock: clock
+            settings: settings
         )
     }
 
@@ -39,7 +38,7 @@ final class BreakReminderServiceTests: XCTestCase {
     func testNotifiesAt50Minutes() {
         sessionManager.handleActivityChange(.active)
         clock.advance(by: 50 * 60)
-        sessionManager.updateStreak()
+        sessionManager.updateSession()
 
         sut.checkAndNotify()
 
@@ -50,7 +49,7 @@ final class BreakReminderServiceTests: XCTestCase {
     func testDoesNotNotifyAt49Minutes() {
         sessionManager.handleActivityChange(.active)
         clock.advance(by: 49 * 60)
-        sessionManager.updateStreak()
+        sessionManager.updateSession()
 
         sut.checkAndNotify()
 
@@ -62,52 +61,16 @@ final class BreakReminderServiceTests: XCTestCase {
 
         sessionManager.handleActivityChange(.active)
         clock.advance(by: 50 * 60)
-        sessionManager.updateStreak()
+        sessionManager.updateSession()
         sut.checkAndNotify()
 
         XCTAssertEqual(sut.breakState, .reminderSent)
     }
 
-    func testStartBreakSetsOnBreak() {
-        sut.startBreak()
-        XCTAssertEqual(sut.breakState, .onBreak)
-        XCTAssertEqual(sut.breakTimeRemaining, 10 * 60)
-    }
-
-    func testBreakCountdownCompletes() {
-        sut.startBreak()
-
-        for _ in 0..<(10 * 60) {
-            sut.tickBreak()
-        }
-
-        XCTAssertEqual(sut.breakState, .working)
-        XCTAssertEqual(sut.breakTimeRemaining, 0)
-        XCTAssertEqual(notificationService.returnNotificationCount, 1)
-    }
-
-    func testEndBreakEarlyWithShortTime() {
-        sut.startBreak()
-        clock.advance(by: 60)
-        sut.endBreak()
-
-        XCTAssertEqual(sut.breakState, .working)
-        XCTAssertEqual(notificationService.returnNotificationCount, 0)
-    }
-
-    func testEndBreakEarlyWithSufficientTime() {
-        sut.startBreak()
-        clock.advance(by: 10 * 60)
-        sut.endBreak()
-
-        XCTAssertEqual(sut.breakState, .working)
-        XCTAssertEqual(notificationService.returnNotificationCount, 1)
-    }
-
     func testSnoozeResetsToWorking() {
         sessionManager.handleActivityChange(.active)
         clock.advance(by: 50 * 60)
-        sessionManager.updateStreak()
+        sessionManager.updateSession()
         sut.checkAndNotify()
         XCTAssertEqual(sut.breakState, .reminderSent)
 
@@ -115,36 +78,41 @@ final class BreakReminderServiceTests: XCTestCase {
         XCTAssertEqual(sut.breakState, .working)
     }
 
-    func testNoNotificationDuringBreak() {
-        sut.startBreak()
+    func testNoNotificationWhenAlreadySent() {
+        sessionManager.handleActivityChange(.active)
+        clock.advance(by: 50 * 60)
+        sessionManager.updateSession()
 
         sut.checkAndNotify()
-        XCTAssertEqual(notificationService.breakReminderCount, 0)
+        sut.checkAndNotify()
+
+        XCTAssertEqual(notificationService.breakReminderCount, 1)
     }
 
     func testTimeUntilBreakCalculation() {
         sessionManager.handleActivityChange(.active)
         clock.advance(by: 30 * 60)
-        sessionManager.updateStreak()
+        sessionManager.updateSession()
 
         let remaining = sut.timeUntilBreak
         XCTAssertEqual(remaining, 20 * 60)
     }
 
-    func testResetClearsAllState() {
-        sut.startBreak()
-        XCTAssertEqual(sut.breakState, .onBreak)
+    func testResetClearsState() {
+        sessionManager.handleActivityChange(.active)
+        clock.advance(by: 50 * 60)
+        sessionManager.updateSession()
+        sut.checkAndNotify()
+        XCTAssertEqual(sut.breakState, .reminderSent)
 
         sut.reset()
         XCTAssertEqual(sut.breakState, .working)
-        XCTAssertEqual(sut.breakTimeRemaining, 0)
     }
 
     func testNotificationCallbackWiring() {
         notificationService.onTakeBreak?()
-        XCTAssertEqual(sut.breakState, .onBreak)
+        XCTAssertEqual(sut.breakState, .working)
 
-        sut.reset()
         notificationService.onSnooze?()
         XCTAssertEqual(sut.breakState, .working)
     }

@@ -10,15 +10,15 @@ enum MenuBarIconProvider {
         breakState: BreakReminderService.BreakState,
         activityState: ActivityMonitorService.ActivityState,
         isTracking: Bool,
-        streakSeconds: Int,
+        sessionSeconds: Int,
         workDurationMinutes: Int
     ) -> String {
         guard isTracking else { return Constants.Icon.stopped }
 
         switch breakState {
-        case .onBreak:
-            return Constants.Icon.onBreak
-        case .reminderSent, .working:
+        case .reminderSent:
+            return Constants.Icon.activeWarning
+        case .working:
             switch activityState {
             case .inactive:
                 return Constants.Icon.inactive
@@ -26,7 +26,7 @@ enum MenuBarIconProvider {
                 let threshold = warningThresholdSeconds(
                     workDurationMinutes: workDurationMinutes
                 )
-                if streakSeconds >= threshold {
+                if sessionSeconds >= threshold {
                     return Constants.Icon.activeWarning
                 }
                 return Constants.Icon.activeNormal

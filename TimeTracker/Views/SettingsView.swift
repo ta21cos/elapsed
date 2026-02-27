@@ -17,8 +17,13 @@ struct SettingsView: View {
                 .tabItem {
                     Label("タイミング", systemImage: "clock")
                 }
+
+            SessionHistoryView()
+                .tabItem {
+                    Label("セッション", systemImage: "list.bullet.rectangle")
+                }
         }
-        .frame(width: 400, height: 300)
+        .frame(width: 500, height: 400)
     }
 }
 
@@ -77,20 +82,12 @@ struct TimingSettingsView: View {
 
             Section("検知設定") {
                 Stepper(
-                    "非アクティブ判定: \(settings.inactivityThresholdMinutes)分",
+                    "非アクティブ判定（セッション終了）: \(settings.inactivityThresholdMinutes)分",
                     value: $settings.inactivityThresholdMinutes,
                     in: 1...15
                 )
                 .accessibilityLabel("非アクティブ判定閾値")
                 .accessibilityValue("\(settings.inactivityThresholdMinutes)分")
-
-                Stepper(
-                    "休憩リセット判定: \(settings.breakResetThresholdMinutes)分",
-                    value: $settings.breakResetThresholdMinutes,
-                    in: 1...30
-                )
-                .accessibilityLabel("休憩リセット判定閾値")
-                .accessibilityValue("\(settings.breakResetThresholdMinutes)分")
 
                 Stepper(
                     "スヌーズ時間: \(settings.snoozeDurationMinutes)分",

@@ -16,19 +16,6 @@ struct StatsView: View {
                 )
                 Spacer()
                 StatItem(
-                    icon: "cup.and.saucer",
-                    label: "休憩回数",
-                    value: "\(summary.totalBreaks)回"
-                )
-            }
-            HStack {
-                StatItem(
-                    icon: "flame",
-                    label: "最長連続",
-                    value: TimeFormatter.formatDuration(summary.longestStreakSeconds)
-                )
-                Spacer()
-                StatItem(
                     icon: "list.number",
                     label: "セッション数",
                     value: "\(summary.sessionCount)回"

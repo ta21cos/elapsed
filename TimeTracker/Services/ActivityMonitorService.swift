@@ -7,14 +7,17 @@ final class ActivityMonitorService {
         case inactive
     }
 
+    private static let requiredInactivePolls = 2
+
     private let inputMonitor: InputEventMonitoring
     private let systemMonitor: any SystemStateMonitoring
     private let settings: AppSettings
     private let clock: Clock
     private var pollingTimer: Timer?
+    private var consecutiveInactivePolls = 0
 
     private(set) var state: ActivityState = .inactive
-    private(set) var lastInputTime: Date = Date()
+    private(set) var idleSeconds: TimeInterval = 0
     var onStateChange: ((ActivityState) -> Void)?
 
     init(
@@ -31,7 +34,6 @@ final class ActivityMonitorService {
     }
 
     func start() {
-        inputMonitor.start()
         systemMonitor.start()
         startPolling()
     }
@@ -39,8 +41,8 @@ final class ActivityMonitorService {
     func stop() {
         pollingTimer?.invalidate()
         pollingTimer = nil
-        inputMonitor.stop()
         systemMonitor.stop()
+        consecutiveInactivePolls = 0
         state = .inactive
     }
 
@@ -56,15 +58,21 @@ final class ActivityMonitorService {
     }
 
     func evaluateActivity() {
-        lastInputTime = inputMonitor.lastInputTime
-        let elapsed = clock.now.timeIntervalSince(lastInputTime)
+        idleSeconds = inputMonitor.idleSeconds
         let threshold = TimeInterval(settings.inactivityThresholdMinutes * 60)
 
-        let newState: ActivityState = elapsed > threshold ? .inactive : .active
-
-        if newState != state {
-            state = newState
-            onStateChange?(newState)
+        if idleSeconds > threshold {
+            consecutiveInactivePolls += 1
+            if consecutiveInactivePolls >= Self.requiredInactivePolls && state != .inactive {
+                state = .inactive
+                onStateChange?(.inactive)
+            }
+        } else {
+            consecutiveInactivePolls = 0
+            if state != .active {
+                state = .active
+                onStateChange?(.active)
+            }
         }
     }
 

@@ -14,7 +14,7 @@ final class ActivityMonitorServiceTests: XCTestCase {
         inputMonitor = MockInputEventMonitor()
         systemMonitor = MockSystemStateMonitor()
         settings = TestHelpers.makeSettings(inactivityThreshold: 5)
-        inputMonitor.lastInputTime = clock.now
+        inputMonitor.idleSeconds = 0
         sut = ActivityMonitorService(
             settings: settings,
             inputMonitor: inputMonitor,
@@ -33,14 +33,14 @@ final class ActivityMonitorServiceTests: XCTestCase {
     }
 
     func testRecentInputMakesActive() {
-        inputMonitor.lastInputTime = clock.now
+        inputMonitor.idleSeconds = 0
         sut.evaluateActivity()
         XCTAssertEqual(sut.state, .active)
     }
 
     func testStaleInputMakesInactive() {
-        inputMonitor.lastInputTime = clock.now
-        clock.advance(by: 6 * 60)
+        inputMonitor.idleSeconds = 6 * 60
+        sut.evaluateActivity()
         sut.evaluateActivity()
         XCTAssertEqual(sut.state, .inactive)
     }
@@ -49,28 +49,27 @@ final class ActivityMonitorServiceTests: XCTestCase {
         var receivedStates: [ActivityMonitorService.ActivityState] = []
         sut.onStateChange = { receivedStates.append($0) }
 
-        inputMonitor.lastInputTime = clock.now
+        inputMonitor.idleSeconds = 0
         sut.evaluateActivity()
 
         XCTAssertEqual(receivedStates, [.active])
     }
 
     func testNoCallbackOnSameState() {
-        inputMonitor.lastInputTime = clock.now
+        inputMonitor.idleSeconds = 0
         sut.evaluateActivity()
 
         var callbackCount = 0
         sut.onStateChange = { _ in callbackCount += 1 }
 
-        inputMonitor.lastInputTime = clock.now
-        clock.advance(by: 1)
+        inputMonitor.idleSeconds = 1
         sut.evaluateActivity()
 
         XCTAssertEqual(callbackCount, 0)
     }
 
     func testScreenLockForcesInactive() {
-        inputMonitor.lastInputTime = clock.now
+        inputMonitor.idleSeconds = 0
         sut.evaluateActivity()
         XCTAssertEqual(sut.state, .active)
 
@@ -80,19 +79,17 @@ final class ActivityMonitorServiceTests: XCTestCase {
 
     func testCustomThresholdRespected() {
         settings.inactivityThresholdMinutes = 1
-        inputMonitor.lastInputTime = clock.now
-        clock.advance(by: 61)
+        inputMonitor.idleSeconds = 61
+        sut.evaluateActivity()
         sut.evaluateActivity()
         XCTAssertEqual(sut.state, .inactive)
     }
 
     func testStartAndStopLifecycle() {
         sut.start()
-        XCTAssertTrue(inputMonitor.isRunning)
         XCTAssertTrue(systemMonitor.isRunning)
 
         sut.stop()
-        XCTAssertFalse(inputMonitor.isRunning)
         XCTAssertFalse(systemMonitor.isRunning)
         XCTAssertEqual(sut.state, .inactive)
     }
@@ -101,5 +98,51 @@ final class ActivityMonitorServiceTests: XCTestCase {
         XCTAssertEqual(sut.state, .inactive)
         systemMonitor.simulateEvent(.screenUnlocked)
         XCTAssertEqual(sut.state, .inactive)
+    }
+
+    // MARK: - Debounce
+
+    func testDebouncing_requiresConsecutiveInactivePolls() {
+        inputMonitor.idleSeconds = 0
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active)
+
+        inputMonitor.idleSeconds = 6 * 60
+
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active, "Single inactive poll should not transition to inactive")
+
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .inactive, "Second consecutive inactive poll should transition to inactive")
+    }
+
+    func testDebouncing_resetByActivity() {
+        inputMonitor.idleSeconds = 0
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active)
+
+        inputMonitor.idleSeconds = 6 * 60
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active, "First inactive poll — still active due to debounce")
+
+        inputMonitor.idleSeconds = 0
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active, "Activity resets the counter")
+
+        inputMonitor.idleSeconds = 6 * 60
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active, "First inactive poll after reset — still active")
+
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .inactive, "Second consecutive inactive poll — now inactive")
+    }
+
+    func testSystemSleep_bypassesDebouncing() {
+        inputMonitor.idleSeconds = 0
+        sut.evaluateActivity()
+        XCTAssertEqual(sut.state, .active)
+
+        systemMonitor.simulateEvent(.systemSleep)
+        XCTAssertEqual(sut.state, .inactive, "System sleep bypasses debounce and immediately goes inactive")
     }
 }

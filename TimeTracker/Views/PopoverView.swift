@@ -11,7 +11,10 @@ struct PopoverView: View {
 
             Divider()
 
-            progressSection
+            WorkProgressView(
+                elapsed: TimeInterval(sessionManager.currentSessionSeconds),
+                total: TimeInterval(settings.workDurationMinutes * 60)
+            )
 
             Divider()
 
@@ -47,21 +50,6 @@ struct PopoverView: View {
         .accessibilityLabel("\(statusTitle)、\(statusSubtitle)")
     }
 
-    @ViewBuilder
-    private var progressSection: some View {
-        if breakService.breakState == .onBreak {
-            BreakCountdownView(
-                remaining: breakService.breakTimeRemaining,
-                total: TimeInterval(settings.breakDurationMinutes * 60)
-            )
-        } else {
-            WorkProgressView(
-                elapsed: TimeInterval(sessionManager.currentStreakSeconds),
-                total: TimeInterval(settings.workDurationMinutes * 60)
-            )
-        }
-    }
-
     private var controlButtons: some View {
         HStack {
             Button(sessionManager.isTracking ? "一時停止" : "再開") {
@@ -86,52 +74,36 @@ struct PopoverView: View {
     // MARK: - Computed Properties
 
     private var statusIcon: String {
-        switch breakService.breakState {
-        case .onBreak:
-            return Constants.Icon.onBreak
-        case .reminderSent:
-            return Constants.Icon.activeWarning
-        case .working:
-            if !sessionManager.isTracking {
-                return Constants.Icon.stopped
-            }
-            return Constants.Icon.activeNormal
-        }
+        if !sessionManager.isTracking { return Constants.Icon.stopped }
+        if breakService.breakState == .reminderSent { return Constants.Icon.activeWarning }
+        if sessionManager.currentSession != nil { return Constants.Icon.activeNormal }
+        return Constants.Icon.inactive
     }
 
     private var statusColor: Color {
-        switch breakService.breakState {
-        case .onBreak: return .green
-        case .reminderSent: return .orange
-        case .working:
-            if !sessionManager.isTracking { return .gray }
-            return .blue
-        }
+        if !sessionManager.isTracking { return .gray }
+        if breakService.breakState == .reminderSent { return .orange }
+        if sessionManager.currentSession != nil { return .blue }
+        return .secondary
     }
 
     private var statusTitle: String {
         if !sessionManager.isTracking { return "停止中" }
-        switch breakService.breakState {
-        case .onBreak: return "休憩中"
-        case .reminderSent: return "休憩してください"
-        case .working: return "作業中"
-        }
+        if breakService.breakState == .reminderSent { return "休憩してください" }
+        if sessionManager.currentSession != nil { return "作業中" }
+        return "待機中"
     }
 
     private var statusSubtitle: String {
         if !sessionManager.isTracking { return "監視は停止しています" }
-        switch breakService.breakState {
-        case .onBreak:
-            return "残り \(TimeFormatter.formatCountdown(Int(breakService.breakTimeRemaining)))"
-        case .reminderSent:
-            return "長時間作業しています"
-        case .working:
+        if breakService.breakState == .reminderSent { return "長時間作業しています" }
+        if sessionManager.currentSession != nil {
             let remaining = breakService.timeUntilBreak
             if remaining > 0 {
                 return "休憩まで \(TimeFormatter.formatDuration(Int(remaining)))"
             }
             return "休憩時間です"
         }
+        return "入力を待っています"
     }
-
 }
