@@ -16,6 +16,8 @@ final class SessionManager {
     private(set) var isTracking: Bool = true
 
     private var updateTimer: Timer?
+    private var pendingStartTime: Date?
+    private var confirmationTimer: Timer?
 
     init(modelContext: ModelContext, settings: AppSettings, clock: Clock = SystemClock()) {
         self.modelContext = modelContext
@@ -39,6 +41,7 @@ final class SessionManager {
     func toggleTracking() {
         isTracking.toggle()
         if !isTracking {
+            cancelPendingSession()
             endCurrentSession()
         }
     }
@@ -72,22 +75,47 @@ final class SessionManager {
     private func handleBecameActive() {
         checkDateChange()
 
-        if currentSession == nil {
-            startNewSession()
+        if currentSession != nil {
+            startSessionTimer()
+            return
         }
-        startSessionTimer()
+
+        if pendingStartTime == nil {
+            pendingStartTime = clock.now
+            confirmationTimer = Timer.scheduledTimer(
+                withTimeInterval: TimeInterval(settings.sessionConfirmationSeconds),
+                repeats: false
+            ) { [weak self] _ in
+                self?.confirmSession()
+            }
+        }
     }
 
     private func handleBecameInactive() {
+        cancelPendingSession()
         endCurrentSession()
     }
 
-    private func startNewSession() {
+    func confirmSession() {
+        confirmationTimer = nil
+        guard let startTime = pendingStartTime else { return }
+        pendingStartTime = nil
+        startNewSession(startTime: startTime)
+        startSessionTimer()
+    }
+
+    private func cancelPendingSession() {
+        confirmationTimer?.invalidate()
+        confirmationTimer = nil
+        pendingStartTime = nil
+    }
+
+    private func startNewSession(startTime: Date) {
         let session = Session()
-        session.startTime = clock.now
+        session.startTime = startTime
         modelContext.insert(session)
         currentSession = session
-        currentSessionSeconds = 0
+        currentSessionSeconds = Int(clock.now.timeIntervalSince(startTime))
 
         todaySummary?.sessionCount += 1
         if todaySummary?.firstSessionStart == nil {

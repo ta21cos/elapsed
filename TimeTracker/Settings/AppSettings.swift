@@ -22,8 +22,14 @@ final class AppSettings {
     var soundEnabled: Bool {
         didSet { defaults.set(soundEnabled, forKey: "soundEnabled") }
     }
+    var sessionConfirmationSeconds: Int {
+        didSet { defaults.set(sessionConfirmationSeconds, forKey: "sessionConfirmationSeconds") }
+    }
     var hasCompletedOnboarding: Bool {
         didSet { defaults.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding") }
+    }
+    var debugMode: Bool {
+        didSet { defaults.set(debugMode, forKey: "debugMode") }
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -49,8 +55,14 @@ final class AppSettings {
         self.soundEnabled = has("soundEnabled")
             ? d.bool(forKey: "soundEnabled")
             : true
+        self.sessionConfirmationSeconds = has("sessionConfirmationSeconds")
+            ? d.integer(forKey: "sessionConfirmationSeconds")
+            : Constants.Defaults.sessionConfirmationSeconds
         self.hasCompletedOnboarding = has("hasCompletedOnboarding")
             ? d.bool(forKey: "hasCompletedOnboarding")
+            : false
+        self.debugMode = has("debugMode")
+            ? d.bool(forKey: "debugMode")
             : false
     }
 }

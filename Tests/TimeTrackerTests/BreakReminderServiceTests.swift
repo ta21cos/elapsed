@@ -35,9 +35,15 @@ final class BreakReminderServiceTests: XCTestCase {
         super.tearDown()
     }
 
-    func testNotifiesAt50Minutes() {
+    private func startConfirmedSession() {
         sessionManager.handleActivityChange(.active)
-        clock.advance(by: 50 * 60)
+        clock.advance(by: 60)
+        sessionManager.confirmSession()
+    }
+
+    func testNotifiesAt50Minutes() {
+        startConfirmedSession()
+        clock.advance(by: 49 * 60)
         sessionManager.updateSession()
 
         sut.checkAndNotify()
@@ -47,8 +53,8 @@ final class BreakReminderServiceTests: XCTestCase {
     }
 
     func testDoesNotNotifyAt49Minutes() {
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 49 * 60)
+        startConfirmedSession()
+        clock.advance(by: 48 * 60)
         sessionManager.updateSession()
 
         sut.checkAndNotify()
@@ -59,8 +65,8 @@ final class BreakReminderServiceTests: XCTestCase {
     func testStateTransitionWorkingToReminderSent() {
         XCTAssertEqual(sut.breakState, .working)
 
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 50 * 60)
+        startConfirmedSession()
+        clock.advance(by: 49 * 60)
         sessionManager.updateSession()
         sut.checkAndNotify()
 
@@ -68,8 +74,8 @@ final class BreakReminderServiceTests: XCTestCase {
     }
 
     func testSnoozeResetsToWorking() {
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 50 * 60)
+        startConfirmedSession()
+        clock.advance(by: 49 * 60)
         sessionManager.updateSession()
         sut.checkAndNotify()
         XCTAssertEqual(sut.breakState, .reminderSent)
@@ -79,8 +85,8 @@ final class BreakReminderServiceTests: XCTestCase {
     }
 
     func testNoNotificationWhenAlreadySent() {
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 50 * 60)
+        startConfirmedSession()
+        clock.advance(by: 49 * 60)
         sessionManager.updateSession()
 
         sut.checkAndNotify()
@@ -90,8 +96,8 @@ final class BreakReminderServiceTests: XCTestCase {
     }
 
     func testTimeUntilBreakCalculation() {
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 30 * 60)
+        startConfirmedSession()
+        clock.advance(by: 29 * 60)
         sessionManager.updateSession()
 
         let remaining = sut.timeUntilBreak
@@ -99,8 +105,8 @@ final class BreakReminderServiceTests: XCTestCase {
     }
 
     func testResetClearsState() {
-        sessionManager.handleActivityChange(.active)
-        clock.advance(by: 50 * 60)
+        startConfirmedSession()
+        clock.advance(by: 49 * 60)
         sessionManager.updateSession()
         sut.checkAndNotify()
         XCTAssertEqual(sut.breakState, .reminderSent)

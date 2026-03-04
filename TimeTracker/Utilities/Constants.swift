@@ -28,5 +28,6 @@ enum Constants {
         static let snoozeDurationMinutes = 5
         static let warningBufferMinutes = 10
         static let minimumWarningMinutes = 10
+        static let sessionConfirmationSeconds = 60
     }
 }

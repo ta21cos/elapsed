@@ -27,40 +27,74 @@ final class SessionManagerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testActiveCreatesSession() {
+    func testActiveCreatesSessionAfterConfirmation() {
         sut.handleActivityChange(.active)
+        XCTAssertNil(sut.currentSession, "Session should not start immediately")
+
+        clock.advance(by: 60)
+        sut.confirmSession()
+
         XCTAssertNotNil(sut.currentSession)
         XCTAssertEqual(sut.currentSession?.isActive, true)
     }
 
-    func testSessionSecondsAdvancesWithClock() {
+    func testSessionStartTimeBackdatedToActivityStart() {
+        let activityStartTime = clock.now
         sut.handleActivityChange(.active)
-        clock.advance(by: 120)
-        sut.updateSession()
-        XCTAssertEqual(sut.currentSessionSeconds, 120)
+
+        clock.advance(by: 60)
+        sut.confirmSession()
+
+        XCTAssertEqual(sut.currentSession?.startTime, activityStartTime)
+        XCTAssertEqual(sut.currentSessionSeconds, 60)
     }
 
-    func testInactiveEndsSession() {
+    func testSessionSecondsAdvancesWithClock() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
+
+        clock.advance(by: 120)
+        sut.updateSession()
+        XCTAssertEqual(sut.currentSessionSeconds, 180)
+    }
+
+    func testInactiveBeforeConfirmationCancelsPending() {
+        sut.handleActivityChange(.active)
+        clock.advance(by: 30)
+        sut.handleActivityChange(.inactive)
+
+        XCTAssertNil(sut.currentSession)
+    }
+
+    func testInactiveEndsConfirmedSession() {
+        sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         let session = sut.currentSession
+
         clock.advance(by: 300)
         sut.updateSession()
-
         sut.handleActivityChange(.inactive)
 
         XCTAssertNil(sut.currentSession)
         XCTAssertEqual(sut.currentSessionSeconds, 0)
         XCTAssertNotNil(session?.endTime)
         XCTAssertEqual(session?.isActive, false)
-        XCTAssertEqual(session?.activeSeconds, 300)
+        XCTAssertEqual(session?.activeSeconds, 360)
     }
 
     func testReactivationCreatesNewSession() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         let firstSession = sut.currentSession
 
         sut.handleActivityChange(.inactive)
+
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         let secondSession = sut.currentSession
 
         XCTAssertNotNil(secondSession)
@@ -69,6 +103,8 @@ final class SessionManagerTests: XCTestCase {
 
     func testEndSessionSetsEndTime() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         let session = sut.currentSession
 
         clock.advance(by: 60)
@@ -76,7 +112,7 @@ final class SessionManagerTests: XCTestCase {
 
         XCTAssertNotNil(session?.endTime)
         XCTAssertEqual(session?.isActive, false)
-        XCTAssertEqual(session?.activeSeconds, 60)
+        XCTAssertEqual(session?.activeSeconds, 120)
         XCTAssertNil(sut.currentSession)
     }
 
@@ -88,11 +124,15 @@ final class SessionManagerTests: XCTestCase {
 
     func testDailySummaryAccumulatesAcrossSessions() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         clock.advance(by: 10)
         sut.updateSession()
         sut.endCurrentSession()
 
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         clock.advance(by: 20)
         sut.updateSession()
         sut.endCurrentSession()
@@ -104,11 +144,21 @@ final class SessionManagerTests: XCTestCase {
 
     func testToggleTrackingStopsSession() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         XCTAssertNotNil(sut.currentSession)
 
         sut.toggleTracking()
         XCTAssertFalse(sut.isTracking)
         XCTAssertNil(sut.currentSession)
+    }
+
+    func testToggleTrackingCancelsPendingSession() {
+        sut.handleActivityChange(.active)
+        sut.toggleTracking()
+
+        XCTAssertNil(sut.currentSession)
+        XCTAssertFalse(sut.isTracking)
     }
 
     func testStaleSessionCleanedOnInit() throws {
@@ -125,15 +175,21 @@ final class SessionManagerTests: XCTestCase {
 
     func testSessionCountIncrements() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         XCTAssertEqual(sut.todaySummary?.sessionCount, 1)
 
         sut.endCurrentSession()
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         XCTAssertEqual(sut.todaySummary?.sessionCount, 2)
     }
 
     func testFirstSessionStartRecorded() {
         sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
         XCTAssertNotNil(sut.todaySummary?.firstSessionStart)
     }
 
