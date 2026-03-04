@@ -81,6 +81,8 @@ final class AppCoordinator {
             case .inactive:
                 self.breakReminder.reset()
             }
+
+            self.updateMenuBarIcon()
         }
     }
 
@@ -104,7 +106,16 @@ final class AppCoordinator {
         )
 
         if sessionManager.isTracking, sessionManager.currentSession != nil {
-            currentMenuBarTitle = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds)
+            var title = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds)
+            if settings.debugMode {
+                let idle = activityMonitor.idleSeconds
+                let debugSuffix = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
+                title += " \(debugSuffix)"
+            }
+            currentMenuBarTitle = title
+        } else if settings.debugMode {
+            let idle = activityMonitor.idleSeconds
+            currentMenuBarTitle = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
         } else {
             currentMenuBarTitle = ""
         }

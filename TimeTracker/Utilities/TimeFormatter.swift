@@ -17,11 +17,10 @@ enum TimeFormatter {
     static func compactDuration(_ seconds: Int) -> String {
         let hours = seconds / 3600
         let minutes = (seconds % 3600) / 60
-        let secs = seconds % 60
         if hours > 0 {
-            return String(format: "%d:%02d:%02d", hours, minutes, secs)
+            return String(format: "%d:%02d", hours, minutes)
         }
-        return String(format: "%d:%02d", minutes, secs)
+        return String(format: "0:%02d", minutes)
     }
 
     static func formatCountdown(_ seconds: Int) -> String {

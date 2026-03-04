@@ -1,5 +1,17 @@
 import SwiftUI
 
+struct MenuBarLabel: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        HStack(spacing: title.isEmpty ? 0 : 4) {
+            Image(systemName: icon)
+            Text(title)
+        }
+    }
+}
+
 enum MenuBarIconProvider {
     static func warningThresholdSeconds(workDurationMinutes: Int) -> Int {
         let buffer = min(Constants.Defaults.warningBufferMinutes, workDurationMinutes - 1)

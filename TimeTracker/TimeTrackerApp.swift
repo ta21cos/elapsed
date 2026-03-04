@@ -24,13 +24,10 @@ struct TimeTrackerApp: App {
                     }
                 }
         } label: {
-            Label {
-                if !appCoordinator.currentMenuBarTitle.isEmpty {
-                    Text(appCoordinator.currentMenuBarTitle)
-                }
-            } icon: {
-                Image(systemName: appCoordinator.currentMenuBarIcon)
-            }
+            MenuBarLabel(
+                icon: appCoordinator.currentMenuBarIcon,
+                title: appCoordinator.currentMenuBarTitle
+            )
         }
         .menuBarExtraStyle(.window)
 
