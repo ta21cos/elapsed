@@ -1,9 +1,22 @@
 import SwiftUI
+import SwiftData
 
 struct PopoverView: View {
     @Environment(SessionManager.self) private var sessionManager
     @Environment(BreakReminderService.self) private var breakService
     @Environment(AppSettings.self) private var settings
+    @Query(sort: \Session.startTime, order: .reverse) private var allSessions: [Session]
+
+    private var todaySessions: [Session] {
+        let today = Calendar.current.startOfDay(for: Date())
+        return allSessions.filter { $0.startTime >= today }
+    }
+
+    private static let timeFormat: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f
+    }()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -22,6 +35,10 @@ struct PopoverView: View {
                 StatsView(summary: summary)
                 Divider()
             }
+
+            todaySessionList
+
+            Divider()
 
             controlButtons
         }
@@ -69,6 +86,52 @@ struct PopoverView: View {
             }
             .accessibilityLabel("アプリを終了")
         }
+    }
+
+    // MARK: - Today Sessions
+
+    @ViewBuilder
+    private var todaySessionList: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("今日のセッション")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if todaySessions.isEmpty {
+                Text("セッションなし")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            } else {
+                ForEach(todaySessions) { session in
+                    sessionRow(session)
+                }
+            }
+        }
+    }
+
+    private func sessionRow(_ session: Session) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: session.isActive ? "circle.fill" : "circle.fill")
+                .font(.system(size: 6))
+                .foregroundStyle(session.isActive ? .red : .green)
+
+            Text(Self.timeFormat.string(from: session.startTime))
+                .monospacedDigit()
+
+            Text("→")
+
+            if let end = session.endTime {
+                Text(Self.timeFormat.string(from: end))
+                    .monospacedDigit()
+            } else {
+                Text("進行中")
+                    .foregroundStyle(.red)
+            }
+
+            Text("(\(session.activeSeconds / 60)分)")
+                .foregroundStyle(.secondary)
+        }
+        .font(.caption)
     }
 
     // MARK: - Computed Properties

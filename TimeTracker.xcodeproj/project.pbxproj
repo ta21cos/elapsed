@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02CC42ABAE38DD4D3257972D /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85AAFF21CABC635F57FEC47 /* SessionHistoryView.swift */; };
 		039C027469A620DF984AE150 /* SessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF93E5C7A803AEA7881AD8E6 /* SessionManagerTests.swift */; };
 		0484E5C49710A6CFAA90D2F5 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6378A14B3446F2A75D6525AD /* AppCoordinator.swift */; };
 		0A894F9DCB11DF78BB4F0495 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1124C51B4AB4FD2511D6D9C /* Clock.swift */; };
@@ -91,7 +90,6 @@
 		E5E6C3CF40AA1A1ED7E12EEF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F252C523F35675C56500E8B5 /* MockInputEventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInputEventMonitor.swift; sourceTree = "<group>"; };
 		F6A34E788BEC1793A89DB140 /* InputEventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputEventMonitor.swift; sourceTree = "<group>"; };
-		F85AAFF21CABC635F57FEC47 /* SessionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionHistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -221,7 +219,6 @@
 				87140EFC89A069E8C9E9E769 /* OnboardingView.swift */,
 				D689FC8AE89121DE565F00FD /* PopoverView.swift */,
 				3951D628F5196D89603613CF /* ProgressRingView.swift */,
-				F85AAFF21CABC635F57FEC47 /* SessionHistoryView.swift */,
 				E5E6C3CF40AA1A1ED7E12EEF /* SettingsView.swift */,
 				2880B70A15CCE278F28939FA /* StatsView.swift */,
 			);
@@ -327,7 +324,6 @@
 				8AADD34294168479602FC9DC /* PopoverView.swift in Sources */,
 				726045A9392087241CF8F63C /* ProgressRingView.swift in Sources */,
 				1D84D7E354BE5022F5867924 /* Session.swift in Sources */,
-				02CC42ABAE38DD4D3257972D /* SessionHistoryView.swift in Sources */,
 				43B0654A345DAFCF2C32FFB5 /* SessionManager.swift in Sources */,
 				D73662FBB6D9C334B3273A2E /* SettingsView.swift in Sources */,
 				FF0169D101B6774362BBBA09 /* StatsView.swift in Sources */,
