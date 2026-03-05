@@ -5,8 +5,9 @@ struct MenuBarLabel: View {
     let title: String
 
     var body: some View {
-        HStack(spacing: title.isEmpty ? 0 : 4) {
+        HStack(alignment: .center, spacing: title.isEmpty ? 0 : 4) {
             Image(systemName: icon)
+                .imageScale(.medium)
             Text(title)
         }
     }
