@@ -5,6 +5,7 @@ struct PopoverView: View {
     @Environment(SessionManager.self) private var sessionManager
     @Environment(BreakReminderService.self) private var breakService
     @Environment(AppSettings.self) private var settings
+    @Environment(\.openWindow) private var openWindow
     @Query(sort: \Session.startTime, order: .reverse) private var allSessions: [Session]
 
     private var todaySessions: [Session] {
@@ -76,10 +77,14 @@ struct PopoverView: View {
 
             Spacer()
 
-            Button("設定") {
-                NSApp.activate()
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            SettingsLink {
+                Text("設定")
             }
+            .simultaneousGesture(TapGesture().onEnded {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    NSApp.activate()
+                }
+            })
             .accessibilityLabel("設定画面を開く")
 
             Button("終了") {
@@ -94,9 +99,21 @@ struct PopoverView: View {
     @ViewBuilder
     private var todaySessionList: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("今日のセッション")
+            HStack {
+                Text("今日のセッション")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("履歴") {
+                    openWindow(id: "session-detail")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        NSApp.activate()
+                    }
+                }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+            }
 
             if todaySessions.isEmpty {
                 Text("セッションなし")

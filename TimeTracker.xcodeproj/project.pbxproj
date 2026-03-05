@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1B2C3D4E5F60718A9B0C1D2 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */; };
 		039C027469A620DF984AE150 /* SessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF93E5C7A803AEA7881AD8E6 /* SessionManagerTests.swift */; };
 		0484E5C49710A6CFAA90D2F5 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6378A14B3446F2A75D6525AD /* AppCoordinator.swift */; };
 		0A894F9DCB11DF78BB4F0495 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1124C51B4AB4FD2511D6D9C /* Clock.swift */; };
@@ -84,6 +85,7 @@
 		C957FD0A0A43A358742BD6C2 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		CB18BE11CC1ED71833388F0B /* BreakReminderServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakReminderServiceTests.swift; sourceTree = "<group>"; };
 		CDA283EADDE96999018161B9 /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		D689FC8AE89121DE565F00FD /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		DD54B4A37C7422E730E02465 /* MenuBarIconProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconProviderTests.swift; sourceTree = "<group>"; };
 		DF93E5C7A803AEA7881AD8E6 /* SessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManagerTests.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				87140EFC89A069E8C9E9E769 /* OnboardingView.swift */,
 				D689FC8AE89121DE565F00FD /* PopoverView.swift */,
 				3951D628F5196D89603613CF /* ProgressRingView.swift */,
+				A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */,
 				E5E6C3CF40AA1A1ED7E12EEF /* SettingsView.swift */,
 				2880B70A15CCE278F28939FA /* StatsView.swift */,
 			);
@@ -322,6 +325,7 @@
 				6417D3FE7D2336B25B76A0E3 /* OnboardingView.swift in Sources */,
 				F3807A987C8FC15E76AEEEF6 /* PermissionManager.swift in Sources */,
 				8AADD34294168479602FC9DC /* PopoverView.swift in Sources */,
+				A1B2C3D4E5F60718A9B0C1D2 /* SessionDetailView.swift in Sources */,
 				726045A9392087241CF8F63C /* ProgressRingView.swift in Sources */,
 				1D84D7E354BE5022F5867924 /* Session.swift in Sources */,
 				43B0654A345DAFCF2C32FFB5 /* SessionManager.swift in Sources */,

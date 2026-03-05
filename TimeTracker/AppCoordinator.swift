@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import SwiftData
 
 @Observable
@@ -43,6 +43,8 @@ final class AppCoordinator {
             settings: settings
         )
         self.breakReminder = br
+
+        NSApp?.setActivationPolicy(.regular)
 
         notificationService.setup()
         setupActivityCallbacks()

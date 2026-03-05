@@ -31,6 +31,14 @@ struct TimeTrackerApp: App {
         }
         .menuBarExtraStyle(.window)
 
+        Window("セッション履歴", id: "session-detail") {
+            SessionDetailView()
+                .environment(appCoordinator.sessionManager)
+                .environment(appCoordinator.settings)
+                .modelContainer(appCoordinator.modelContainer)
+        }
+        .defaultSize(width: 500, height: 400)
+
         Settings {
             SettingsView()
                 .environment(appCoordinator.settings)
