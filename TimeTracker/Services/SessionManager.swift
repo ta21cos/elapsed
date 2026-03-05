@@ -18,6 +18,7 @@ final class SessionManager {
     private var updateTimer: Timer?
     private var pendingStartTime: Date?
     private var confirmationTimer: Timer?
+    private var lastUpdateTime: Date?
 
     init(modelContext: ModelContext, settings: AppSettings, clock: Clock = SystemClock()) {
         self.modelContext = modelContext
@@ -52,9 +53,11 @@ final class SessionManager {
 
         guard let session = currentSession else { return }
 
-        session.endTime = clock.now
-        session.activeSeconds = Int(clock.now.timeIntervalSince(session.startTime))
+        let endTime = lastUpdateTime ?? clock.now
+        session.endTime = endTime
+        session.activeSeconds = Int(endTime.timeIntervalSince(session.startTime))
         session.isActive = false
+        lastUpdateTime = nil
         updateDailySummary(with: session)
         save()
 
@@ -66,6 +69,7 @@ final class SessionManager {
 
     func updateSession() {
         guard let session = currentSession else { return }
+        lastUpdateTime = clock.now
         currentSessionSeconds = Int(clock.now.timeIntervalSince(session.startTime))
         session.activeSeconds = currentSessionSeconds
     }

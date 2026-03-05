@@ -83,8 +83,12 @@ final class ActivityMonitorService {
                 guard let self, self.state != .inactive else { return }
                 self.state = .inactive
                 self.onStateChange?(.inactive)
-            case .screenUnlocked, .systemWake:
+            case .screenUnlocked:
                 break
+            case .systemWake:
+                guard let self, self.state != .inactive else { return }
+                self.state = .inactive
+                self.onStateChange?(.inactive)
             }
         }
     }

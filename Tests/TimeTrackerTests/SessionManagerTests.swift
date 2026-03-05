@@ -198,4 +198,21 @@ final class SessionManagerTests: XCTestCase {
         sut.handleActivityChange(.active)
         XCTAssertNil(sut.currentSession)
     }
+
+    func testEndSessionUsesLastUpdateTimeExcludingSleep() {
+        sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
+        let session = sut.currentSession
+
+        clock.advance(by: 300)
+        sut.updateSession()
+        let lastActiveTime = clock.now
+
+        clock.advance(by: 3600)
+        sut.endCurrentSession()
+
+        XCTAssertEqual(session?.endTime, lastActiveTime)
+        XCTAssertEqual(session?.activeSeconds, 360)
+    }
 }
