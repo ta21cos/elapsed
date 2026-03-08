@@ -18,10 +18,17 @@ struct SettingsView: View {
                 .tabItem {
                     Label("タイミング", systemImage: "clock")
                 }
+
+            StatisticsView()
+                .tabItem {
+                    Label("統計", systemImage: "chart.bar.fill")
+                }
         }
-        .frame(width: 500, height: 400)
+        .frame(width: 560, height: 480)
     }
 }
+
+// MARK: - General Settings
 
 struct GeneralSettingsView: View {
     @Bindable var settings: AppSettings
@@ -29,37 +36,54 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         Form {
-            Section("一般") {
-                Toggle("ログイン時に自動起動", isOn: $settings.launchAtLogin)
-                    .onChange(of: settings.launchAtLogin) { _, newValue in
-                        updateLaunchAtLogin(newValue)
-                    }
-                    .accessibilityLabel("ログイン時に自動起動")
+            Section {
+                SettingsRow(icon: "power", iconColor: .blue) {
+                    Toggle("ログイン時に自動起動", isOn: $settings.launchAtLogin)
+                        .onChange(of: settings.launchAtLogin) { _, newValue in
+                            updateLaunchAtLogin(newValue)
+                        }
+                }
 
-                Toggle("通知音を有効にする", isOn: $settings.soundEnabled)
-                    .accessibilityLabel("通知音を有効にする")
+                SettingsRow(icon: "speaker.wave.2.fill", iconColor: .purple) {
+                    Toggle("通知音を有効にする", isOn: $settings.soundEnabled)
+                }
 
-                Toggle("デバッグモード", isOn: $settings.debugMode)
-                    .accessibilityLabel("デバッグモード")
+                SettingsRow(icon: "ant.fill", iconColor: .gray) {
+                    Toggle("デバッグモード", isOn: $settings.debugMode)
+                }
+            } header: {
+                Text("一般")
             }
 
-            Section("通知") {
-                HStack {
-                    Text("通知の許可")
-                    Spacer()
-                    notificationStatusLabel
+            Section {
+                SettingsRow(icon: "bell.badge.fill", iconColor: .red) {
+                    HStack {
+                        Text("通知の許可")
+                        Spacer()
+                        notificationStatusLabel
+                    }
                 }
 
                 if notificationStatus != .authorized {
-                    Button("システム設定で通知を許可する") {
+                    Button {
                         NSWorkspace.shared.open(
                             URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings")!
                         )
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Label("システム設定で通知を許可する", systemImage: "arrow.up.forward.square")
+                            Spacer()
+                        }
                     }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.blue)
                 }
+            } header: {
+                Text("通知")
             }
         }
-        .padding()
+        .formStyle(.grouped)
         .task { await refreshNotificationStatus() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             Task { await refreshNotificationStatus() }
@@ -72,15 +96,19 @@ struct GeneralSettingsView: View {
         case .authorized:
             Label("許可済み", systemImage: "checkmark.circle.fill")
                 .foregroundStyle(.green)
+                .font(.callout)
         case .denied:
             Label("拒否", systemImage: "xmark.circle.fill")
                 .foregroundStyle(.red)
+                .font(.callout)
         case .provisional:
             Label("仮許可", systemImage: "exclamationmark.circle.fill")
                 .foregroundStyle(.orange)
+                .font(.callout)
         default:
             Label("未設定", systemImage: "questionmark.circle")
                 .foregroundStyle(.secondary)
+                .font(.callout)
         }
     }
 
@@ -102,44 +130,80 @@ struct GeneralSettingsView: View {
     }
 }
 
+// MARK: - Timing Settings
+
 struct TimingSettingsView: View {
     @Bindable var settings: AppSettings
 
     var body: some View {
         Form {
-            Section("作業サイクル") {
-                StepperField(
-                    label: "休憩通知までの作業時間",
-                    value: $settings.workDurationMinutes,
-                    range: 1...120
-                )
-                StepperField(
-                    label: "推奨休憩時間",
-                    value: $settings.breakDurationMinutes,
-                    range: 1...30
-                )
+            Section {
+                SettingsRow(icon: "deskclock.fill", iconColor: .blue) {
+                    StepperField(
+                        label: "休憩通知までの作業時間",
+                        value: $settings.workDurationMinutes,
+                        range: 1...120
+                    )
+                }
+                SettingsRow(icon: "cup.and.saucer.fill", iconColor: .green) {
+                    StepperField(
+                        label: "推奨休憩時間",
+                        value: $settings.breakDurationMinutes,
+                        range: 1...30
+                    )
+                }
+            } header: {
+                Text("作業サイクル")
             }
 
-            Section("検知設定") {
-                StepperField(
-                    label: "セッション開始の確認時間",
-                    value: $settings.sessionConfirmationSeconds,
-                    range: 10...300,
-                    unit: "秒"
-                )
-                StepperField(
-                    label: "非アクティブ判定（セッション終了）",
-                    value: $settings.inactivityThresholdMinutes,
-                    range: 1...15
-                )
-                StepperField(
-                    label: "スヌーズ時間",
-                    value: $settings.snoozeDurationMinutes,
-                    range: 1...15
-                )
+            Section {
+                SettingsRow(icon: "person.fill.checkmark", iconColor: .cyan) {
+                    StepperField(
+                        label: "セッション開始の確認時間",
+                        value: $settings.sessionConfirmationSeconds,
+                        range: 10...300,
+                        unit: "秒"
+                    )
+                }
+                SettingsRow(icon: "moon.fill", iconColor: .indigo) {
+                    StepperField(
+                        label: "非アクティブ判定",
+                        value: $settings.inactivityThresholdMinutes,
+                        range: 1...15
+                    )
+                }
+                SettingsRow(icon: "alarm.fill", iconColor: .orange) {
+                    StepperField(
+                        label: "スヌーズ時間",
+                        value: $settings.snoozeDurationMinutes,
+                        range: 1...15
+                    )
+                }
+            } header: {
+                Text("検知設定")
             }
         }
-        .padding()
+        .formStyle(.grouped)
+    }
+}
+
+// MARK: - Reusable Components
+
+private struct SettingsRow<Content: View>: View {
+    let icon: String
+    let iconColor: Color
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundStyle(.white)
+                .frame(width: 24, height: 24)
+                .background(iconColor.gradient, in: RoundedRectangle(cornerRadius: 6))
+
+            content
+        }
     }
 }
 
@@ -160,6 +224,7 @@ private struct StepperField: View {
             Stepper("", value: $value, in: range)
                 .labelsHidden()
             Text(unit)
+                .foregroundStyle(.secondary)
         }
         .accessibilityLabel(label)
         .accessibilityValue("\(value)\(unit)")

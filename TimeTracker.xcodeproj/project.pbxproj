@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A1B2C3D4E5F60718A9B0C1D2 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */; };
+		STAT1ST1C5V13WBLD000001 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STAT1ST1C5V13WREF000001 /* StatisticsView.swift */; };
 		039C027469A620DF984AE150 /* SessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF93E5C7A803AEA7881AD8E6 /* SessionManagerTests.swift */; };
 		0484E5C49710A6CFAA90D2F5 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6378A14B3446F2A75D6525AD /* AppCoordinator.swift */; };
 		0A894F9DCB11DF78BB4F0495 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1124C51B4AB4FD2511D6D9C /* Clock.swift */; };
@@ -86,6 +87,7 @@
 		CB18BE11CC1ED71833388F0B /* BreakReminderServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakReminderServiceTests.swift; sourceTree = "<group>"; };
 		CDA283EADDE96999018161B9 /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		STAT1ST1C5V13WREF000001 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		D689FC8AE89121DE565F00FD /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		DD54B4A37C7422E730E02465 /* MenuBarIconProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconProviderTests.swift; sourceTree = "<group>"; };
 		DF93E5C7A803AEA7881AD8E6 /* SessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManagerTests.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				3951D628F5196D89603613CF /* ProgressRingView.swift */,
 				A1B2C3D4E5F60718A9B0C1D3 /* SessionDetailView.swift */,
 				E5E6C3CF40AA1A1ED7E12EEF /* SettingsView.swift */,
+				STAT1ST1C5V13WREF000001 /* StatisticsView.swift */,
 				2880B70A15CCE278F28939FA /* StatsView.swift */,
 			);
 			path = Views;
@@ -330,6 +333,7 @@
 				1D84D7E354BE5022F5867924 /* Session.swift in Sources */,
 				43B0654A345DAFCF2C32FFB5 /* SessionManager.swift in Sources */,
 				D73662FBB6D9C334B3273A2E /* SettingsView.swift in Sources */,
+				STAT1ST1C5V13WBLD000001 /* StatisticsView.swift in Sources */,
 				FF0169D101B6774362BBBA09 /* StatsView.swift in Sources */,
 				CEE52BBF8C31CA827608C960 /* SystemStateMonitor.swift in Sources */,
 				6D6C96B93584442AA1AA931C /* TimeFormatter.swift in Sources */,
