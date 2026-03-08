@@ -6,9 +6,9 @@
             <title>4.1.2</title>
             <pubDate>Sun, 08 Mar 2026 17:50:12 +0900</pubDate>
             <sparkle:version>1</sparkle:version>
-            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/ta21cos/elapsed/main/Elapsed-1.0.2.zip" length="1992172" type="application/octet-stream" sparkle:edSignature="dLJMUa3oXJQ24oQdjyCXC6xAJQywqLM0CC85lk6xnazuprOaFJSpWYuw+Ebub61CRbmYTiXHB4/JoKStYA1GDA=="/>
+            <enclosure url="https://raw.githubusercontent.com/ta21cos/elapsed/main/Elapsed-1.0.3.zip" length="1999574" type="application/octet-stream" sparkle:edSignature="iqcho1OkeFXMUamUlZIniFn+lJaZ/Jcmmd0RmMrcAfmPpAmvAtG7JughszwPIajdYnT4v4B4Br4QckYbRaF5Dw=="/>
         </item>
     </channel>
 </rss>
