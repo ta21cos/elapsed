@@ -8,7 +8,7 @@
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/ta21cos/elapsed/main/Elapsed-1.0.0.zip" length="1718560" type="application/octet-stream" sparkle:edSignature="Vq3yqNgpAHF1RvXyXhjPc3kkEpme+IxIG2cY1dyNfcG+Y+wF0Xu901yx9mFDJaOAgkTkeQP3k0gT8d7D18XXDw=="/>
+            <enclosure url="https://raw.githubusercontent.com/ta21cos/elapsed/main/Elapsed-1.0.0.zip" length="1720335" type="application/octet-stream" sparkle:edSignature="i33gjxvf0f3kSAP5xPIoeHnyWxMuq6/ceHOgOZpXrVGcYKMYtOKy/hq5e/QaG2VdkYdE4pfowCougmpv1T9qDg=="/>
         </item>
     </channel>
 </rss>
