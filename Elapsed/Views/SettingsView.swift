@@ -62,6 +62,10 @@ struct GeneralSettingsView: View {
                     Toggle("通知音を有効にする", isOn: $settings.soundEnabled)
                 }
 
+                SettingsRow(icon: "clock.badge", iconColor: .green) {
+                    Toggle("メニューバーに秒を表示", isOn: $settings.showSeconds)
+                }
+
                 SettingsRow(icon: "ant.fill", iconColor: .gray) {
                     Toggle("デバッグモード", isOn: $settings.debugMode)
                 }

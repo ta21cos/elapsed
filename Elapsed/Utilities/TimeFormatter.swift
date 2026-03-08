@@ -14,10 +14,14 @@ enum TimeFormatter {
         return "\(secs)秒"
     }
 
-    static func compactDuration(_ seconds: Int) -> String {
+    static func compactDuration(_ seconds: Int, showSeconds: Bool = false) -> String {
         let totalMinutes = seconds / 60
         let hours = totalMinutes / 60
         let minutes = totalMinutes % 60
+        if showSeconds {
+            let secs = seconds % 60
+            return String(format: "%02d:%02d:%02d", hours, minutes, secs)
+        }
         return String(format: "%02d:%02d", hours, minutes)
     }
 

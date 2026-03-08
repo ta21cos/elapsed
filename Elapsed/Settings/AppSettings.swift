@@ -31,6 +31,9 @@ final class AppSettings {
     var debugMode: Bool {
         didSet { defaults.set(debugMode, forKey: "debugMode") }
     }
+    var showSeconds: Bool {
+        didSet { defaults.set(showSeconds, forKey: "showSeconds") }
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -63,6 +66,9 @@ final class AppSettings {
             : false
         self.debugMode = has("debugMode")
             ? d.bool(forKey: "debugMode")
+            : false
+        self.showSeconds = has("showSeconds")
+            ? d.bool(forKey: "showSeconds")
             : false
     }
 }

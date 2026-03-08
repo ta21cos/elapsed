@@ -106,7 +106,7 @@ final class AppCoordinator {
         )
 
         if sessionManager.isTracking, sessionManager.currentSession != nil {
-            var title = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds)
+            var title = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds, showSeconds: settings.showSeconds)
             if settings.debugMode {
                 let idle = activityMonitor.idleSeconds
                 let debugSuffix = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
