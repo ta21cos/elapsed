@@ -25,6 +25,14 @@ struct SettingsView: View {
                 }
         }
         .frame(width: 560, height: 480)
+        .onAppear {
+            NSApp.activate(ignoringOtherApps: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                for window in NSApp.windows where window.title.contains("設定") || window.identifier?.rawValue == "com_apple_SwiftUI_Settings_window" {
+                    window.makeKeyAndOrderFront(nil)
+                }
+            }
+        }
     }
 }
 

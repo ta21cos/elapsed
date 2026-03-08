@@ -60,6 +60,9 @@ struct SessionDetailView: View {
             }
         }
         .frame(minWidth: 400, minHeight: 300)
+        .onAppear {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     private func sessionRow(_ session: Session) -> some View {

@@ -80,11 +80,6 @@ struct PopoverView: View {
             SettingsLink {
                 Text("設定")
             }
-            .simultaneousGesture(TapGesture().onEnded {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    NSApp.activate()
-                }
-            })
             .accessibilityLabel("設定画面を開く")
 
             Button("終了") {
@@ -106,8 +101,8 @@ struct PopoverView: View {
                 Spacer()
                 Button("履歴") {
                     openWindow(id: "session-detail")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        NSApp.activate()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        NSApp.activate(ignoringOtherApps: true)
                     }
                 }
                 .font(.caption)
