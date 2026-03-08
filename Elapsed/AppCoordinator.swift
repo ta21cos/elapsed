@@ -93,7 +93,7 @@ final class AppCoordinator {
         ) { [weak self] _ in
             self?.updateMenuBarIcon()
         }
-        iconUpdateTimer?.tolerance = 0.5
+        iconUpdateTimer?.tolerance = 0.05
     }
 
     private func updateMenuBarIcon() {
