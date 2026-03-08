@@ -38,6 +38,9 @@ jobs:
             ONLY_ACTIVE_ARCH=NO \
             build
 
+      - name: Re-sign app bundle
+        run: codesign --force --deep --sign - build/Build/Products/Release/Elapsed.app
+
       - name: Create zip
         run: |
           cd build/Build/Products/Release
