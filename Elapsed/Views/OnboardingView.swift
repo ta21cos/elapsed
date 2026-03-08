@@ -108,9 +108,18 @@ struct OnboardingView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
 
-                Text("権限付与後、自動的に検知されます")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Button("権限を確認する") {
+                    accessibilityGranted = permissionManager.checkAccessibilityPermission()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+
+                Button("スキップして次へ") {
+                    currentStep = 2
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .font(.caption)
             }
         }
     }
