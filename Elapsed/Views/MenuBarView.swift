@@ -1,17 +1,59 @@
 import SwiftUI
+import AppKit
 
 struct MenuBarLabel: View {
     let icon: String
     let title: String
 
     var body: some View {
-        HStack(alignment: .center, spacing: title.isEmpty ? 0 : 8) {
-            Image(systemName: icon)
-                .imageScale(.medium)
-                .offset(y: -0.5)
-            Text(title)
-        }
+        Image(nsImage: renderMenuBarImage(icon: icon, title: title))
     }
+}
+
+private func renderMenuBarImage(icon: String, title: String) -> NSImage {
+    let fontSize: CGFloat = 12
+    let iconTextSpacing: CGFloat = 3
+    let baselineOffset: CGFloat = 0
+
+    let font = NSFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .regular)
+    let iconConfig = NSImage.SymbolConfiguration(pointSize: fontSize, weight: .regular)
+    let iconImage = NSImage(systemSymbolName: icon, accessibilityDescription: nil)?
+        .withSymbolConfiguration(iconConfig) ?? NSImage()
+
+    let iconSize = iconImage.size
+
+    if title.isEmpty {
+        return iconImage
+    }
+
+    let attrs: [NSAttributedString.Key: Any] = [
+        .font: font,
+        .foregroundColor: NSColor.white,
+        .baselineOffset: baselineOffset,
+    ]
+    let textSize = (title as NSString).size(withAttributes: attrs)
+
+    let totalWidth = iconSize.width + iconTextSpacing + textSize.width
+    let height = max(iconSize.height, textSize.height)
+
+    let image = NSImage(size: NSSize(width: totalWidth, height: height))
+    image.lockFocus()
+
+    let iconY = (height - iconSize.height) / 2
+    iconImage.draw(
+        in: NSRect(x: 0, y: iconY, width: iconSize.width, height: iconSize.height),
+        from: .zero,
+        operation: .sourceOver,
+        fraction: 1
+    )
+
+    let textX = iconSize.width + iconTextSpacing
+    let textY = (height - textSize.height) / 2 + baselineOffset
+    (title as NSString).draw(at: NSPoint(x: textX, y: textY), withAttributes: attrs)
+
+    image.unlockFocus()
+    image.isTemplate = true
+    return image
 }
 
 enum MenuBarIconProvider {
