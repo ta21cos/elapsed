@@ -6,6 +6,12 @@ options:
   xcodeVersion: "15.4"
   minimumXcodeGenVersion: "2.30"
   projectVersion: "1"
+  postGenCommand: sed -i '' 's/objectVersion = 77/objectVersion = 56/' Elapsed.xcodeproj/project.pbxproj
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.0.0"
 
 settings:
   base:
@@ -34,6 +40,8 @@ targets:
           ENABLE_HARDENED_RUNTIME: NO
         Release:
           ENABLE_HARDENED_RUNTIME: YES
+    dependencies:
+      - package: Sparkle
     entitlements:
       path: Elapsed/Elapsed.entitlements
 

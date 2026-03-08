@@ -3,6 +3,7 @@ import ServiceManagement
 import UserNotifications
 
 struct SettingsView: View {
+    @ObservedObject var updaterController: UpdaterController
     @Environment(AppSettings.self) private var settings
 
     var body: some View {
@@ -22,6 +23,11 @@ struct SettingsView: View {
             StatisticsView()
                 .tabItem {
                     Label("統計", systemImage: "chart.bar.fill")
+                }
+
+            UpdateSettingsView(updaterController: updaterController)
+                .tabItem {
+                    Label("アップデート", systemImage: "arrow.triangle.2.circlepath")
                 }
         }
         .frame(width: 560, height: 480)
@@ -236,6 +242,50 @@ private struct StepperField: View {
         }
         .accessibilityLabel(label)
         .accessibilityValue("\(value)\(unit)")
+    }
+}
+
+// MARK: - Update Settings
+
+struct UpdateSettingsView: View {
+    @ObservedObject var updaterController: UpdaterController
+
+    var body: some View {
+        Form {
+            Section {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Elapsed")
+                            .font(.headline)
+                        Text("バージョン \(Bundle.main.shortVersionString)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("アップデートを確認") {
+                        updaterController.checkForUpdates()
+                    }
+                    .disabled(!updaterController.canCheckForUpdates)
+                }
+
+                Toggle(
+                    "自動的にアップデートを確認",
+                    isOn: Binding(
+                        get: { updaterController.updater.automaticallyChecksForUpdates },
+                        set: { updaterController.updater.automaticallyChecksForUpdates = $0 }
+                    )
+                )
+            } header: {
+                Text("ソフトウェア・アップデート")
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+private extension Bundle {
+    var shortVersionString: String {
+        infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
     }
 }
 

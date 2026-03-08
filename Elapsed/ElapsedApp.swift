@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct ElapsedApp: App {
     @State private var appCoordinator: AppCoordinator
+    @StateObject private var updaterController = UpdaterController()
     @Environment(\.openWindow) private var openWindow
 
     init() {
@@ -40,7 +41,7 @@ struct ElapsedApp: App {
         .defaultSize(width: 500, height: 400)
 
         Settings {
-            SettingsView()
+            SettingsView(updaterController: updaterController)
                 .environment(appCoordinator.settings)
                 .environment(appCoordinator.sessionManager)
                 .environment(appCoordinator.breakReminder)

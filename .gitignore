@@ -26,6 +26,9 @@ xcuserdata/
 Packages/
 Package.resolved
 
+# Sparkle tools (downloaded binary)
+.sparkle-tools/
+
 # Misc
 *.swp
 *~
