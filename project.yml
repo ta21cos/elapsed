@@ -1,4 +1,4 @@
-name: TimeTracker
+name: Elapsed
 options:
   bundleIdPrefix: com.ta21cos
   deploymentTarget:
@@ -13,18 +13,18 @@ settings:
     MACOSX_DEPLOYMENT_TARGET: "14.0"
 
 targets:
-  TimeTracker:
+  Elapsed:
     type: application
     platform: macOS
     sources:
-      - TimeTracker
+      - Elapsed
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.TimeTracker
-        INFOPLIST_FILE: TimeTracker/Info.plist
-        CODE_SIGN_ENTITLEMENTS: TimeTracker/TimeTracker.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.Elapsed
+        INFOPLIST_FILE: Elapsed/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Elapsed/Elapsed.entitlements
         CODE_SIGN_IDENTITY: "-"
-        PRODUCT_NAME: TimeTracker
+        PRODUCT_NAME: Elapsed
         COMBINE_HIDPI_IMAGES: YES
         LD_RUNPATH_SEARCH_PATHS:
           - $(inherited)
@@ -35,19 +35,19 @@ targets:
         Release:
           ENABLE_HARDENED_RUNTIME: YES
     entitlements:
-      path: TimeTracker/TimeTracker.entitlements
+      path: Elapsed/Elapsed.entitlements
 
-  TimeTrackerTests:
+  ElapsedTests:
     type: bundle.unit-test
     platform: macOS
     sources:
-      - Tests/TimeTrackerTests
+      - Tests/ElapsedTests
     dependencies:
-      - target: TimeTracker
+      - target: Elapsed
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.TimeTrackerTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.ta21cos.ElapsedTests
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_IDENTITY: "-"
         BUNDLE_LOADER: "$(TEST_HOST)"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TimeTracker.app/Contents/MacOS/TimeTracker"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Elapsed.app/Contents/MacOS/Elapsed"
