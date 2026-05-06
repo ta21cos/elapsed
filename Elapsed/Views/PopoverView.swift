@@ -6,11 +6,15 @@ struct PopoverView: View {
     @Environment(BreakReminderService.self) private var breakService
     @Environment(AppSettings.self) private var settings
     @Environment(\.openWindow) private var openWindow
-    @Query(sort: \Session.startTime, order: .reverse) private var allSessions: [Session]
+    @Query private var todaySessions: [Session]
 
-    private var todaySessions: [Session] {
-        let today = Calendar.current.startOfDay(for: Date())
-        return allSessions.filter { $0.startTime >= today }
+    init() {
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        _todaySessions = Query(
+            filter: #Predicate<Session> { $0.startTime >= todayStart },
+            sort: \Session.startTime,
+            order: .reverse
+        )
     }
 
     private static let timeFormat: DateFormatter = {
@@ -123,7 +127,11 @@ struct PopoverView: View {
     }
 
     private func sessionRow(_ session: Session) -> some View {
-        HStack(spacing: 4) {
+        let displaySeconds = session.isActive
+            ? sessionManager.currentSessionSeconds
+            : session.activeSeconds
+
+        return HStack(spacing: 4) {
             Image(systemName: session.isActive ? "circle.fill" : "circle.fill")
                 .font(.system(size: 6))
                 .foregroundStyle(session.isActive ? .red : .green)
@@ -141,7 +149,7 @@ struct PopoverView: View {
                     .foregroundStyle(.red)
             }
 
-            Text("(\(session.activeSeconds / 60)分)")
+            Text("(\(displaySeconds / 60)分)")
                 .foregroundStyle(.secondary)
         }
         .font(.caption)

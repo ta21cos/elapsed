@@ -15,6 +15,8 @@ final class SessionManager {
     private(set) var todaySummary: DailySummary?
     private(set) var isTracking: Bool = true
 
+    var onSessionTick: ((Int) -> Void)?
+
     private var updateTimer: Timer?
     private var pendingStartTime: Date?
     private var confirmationTimer: Timer?
@@ -71,7 +73,7 @@ final class SessionManager {
         guard let session = currentSession else { return }
         lastUpdateTime = clock.now
         currentSessionSeconds = Int(clock.now.timeIntervalSince(session.startTime))
-        session.activeSeconds = currentSessionSeconds
+        onSessionTick?(currentSessionSeconds)
     }
 
     // MARK: - Private

@@ -3,7 +3,16 @@ import SwiftData
 
 struct SessionDetailView: View {
     @Environment(SessionManager.self) private var sessionManager
-    @Query(sort: \Session.startTime, order: .reverse) private var sessions: [Session]
+    @Query private var sessions: [Session]
+
+    init() {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        _sessions = Query(
+            filter: #Predicate<Session> { $0.startTime >= cutoff },
+            sort: \Session.startTime,
+            order: .reverse
+        )
+    }
 
     private static let dateFormat: DateFormatter = {
         let f = DateFormatter()
@@ -30,6 +39,12 @@ struct SessionDetailView: View {
         }
     }
 
+    private func displaySeconds(for session: Session) -> Int {
+        session.isActive
+            ? sessionManager.currentSessionSeconds
+            : session.activeSeconds
+    }
+
     var body: some View {
         Group {
             if sessions.isEmpty {
@@ -49,7 +64,7 @@ struct SessionDetailView: View {
                             HStack {
                                 Text(date)
                                 Spacer()
-                                let total = daySessions.reduce(0) { $0 + $1.activeSeconds }
+                                let total = daySessions.reduce(0) { $0 + displaySeconds(for: $1) }
                                 Text("合計 \(TimeFormatter.formatDuration(total))")
                                     .foregroundStyle(.secondary)
                             }
@@ -87,7 +102,7 @@ struct SessionDetailView: View {
 
             Spacer()
 
-            Text(TimeFormatter.formatDuration(session.activeSeconds))
+            Text(TimeFormatter.formatDuration(displaySeconds(for: session)))
                 .foregroundStyle(.secondary)
                 .monospacedDigit()
         }

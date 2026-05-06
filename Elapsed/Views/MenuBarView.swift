@@ -1,12 +1,38 @@
 import SwiftUI
 import AppKit
 
+@MainActor
+final class MenuBarImageCache {
+    static let shared = MenuBarImageCache()
+
+    private struct Key: Hashable {
+        let icon: String
+        let title: String
+    }
+
+    private var cache: [Key: NSImage] = [:]
+    private let capacity = 16
+
+    func image(icon: String, title: String) -> NSImage {
+        let key = Key(icon: icon, title: title)
+        if let cached = cache[key] {
+            return cached
+        }
+        let image = renderMenuBarImage(icon: icon, title: title)
+        if cache.count >= capacity {
+            cache.removeAll(keepingCapacity: true)
+        }
+        cache[key] = image
+        return image
+    }
+}
+
 struct MenuBarLabel: View {
     let icon: String
     let title: String
 
     var body: some View {
-        Image(nsImage: renderMenuBarImage(icon: icon, title: title))
+        Image(nsImage: MenuBarImageCache.shared.image(icon: icon, title: title))
     }
 }
 

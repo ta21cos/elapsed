@@ -46,6 +46,7 @@ final class AppCoordinator {
 
         notificationService.setup()
         setupActivityCallbacks()
+        setupSessionTickCallback()
         startIconUpdate()
 
         startIfNeeded()
@@ -86,6 +87,15 @@ final class AppCoordinator {
         }
     }
 
+    private func setupSessionTickCallback() {
+        sessionManager.onSessionTick = { [weak self] _ in
+            guard let self else { return }
+            if self.sessionManager.isTracking && self.activityMonitor.state == .active {
+                self.breakReminder.checkAndNotify()
+            }
+        }
+    }
+
     private func startIconUpdate() {
         iconUpdateTimer = Timer.scheduledTimer(
             withTimeInterval: 1.0,
@@ -93,7 +103,7 @@ final class AppCoordinator {
         ) { [weak self] _ in
             self?.updateMenuBarIcon()
         }
-        iconUpdateTimer?.tolerance = 0.05
+        iconUpdateTimer?.tolerance = 0.1
     }
 
     private func updateMenuBarIcon() {
@@ -118,10 +128,6 @@ final class AppCoordinator {
             currentMenuBarTitle = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
         } else {
             currentMenuBarTitle = ""
-        }
-
-        if sessionManager.isTracking && activityMonitor.state == .active {
-            breakReminder.checkAndNotify()
         }
     }
 }
