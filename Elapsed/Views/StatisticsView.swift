@@ -3,14 +3,34 @@ import SwiftData
 
 struct StatisticsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Session.startTime, order: .reverse) private var allSessions: [Session]
-    @Query(sort: \DailySummary.date, order: .reverse) private var allSummaries: [DailySummary]
     @State private var selectedPeriod: Period = .day
+    @State private var sessionsInRange: [Session] = []
 
     enum Period: String, CaseIterable {
         case day = "日"
         case week = "週"
         case month = "月"
+    }
+
+    private func cutoffDate(for period: Period) -> Date {
+        let calendar = Calendar.current
+        switch period {
+        case .day:
+            return calendar.date(byAdding: .day, value: -14, to: Date()) ?? Date()
+        case .week:
+            return calendar.date(byAdding: .day, value: -84, to: Date()) ?? Date()
+        case .month:
+            return calendar.date(byAdding: .month, value: -12, to: Date()) ?? Date()
+        }
+    }
+
+    private func fetchSessions() {
+        let cutoff = cutoffDate(for: selectedPeriod)
+        let descriptor = FetchDescriptor<Session>(
+            predicate: #Predicate<Session> { $0.startTime >= cutoff && !$0.isActive },
+            sortBy: [SortDescriptor(\.startTime, order: .reverse)]
+        )
+        sessionsInRange = (try? modelContext.fetch(descriptor)) ?? []
     }
 
     var body: some View {
@@ -36,6 +56,9 @@ struct StatisticsView: View {
                     .padding()
                 }
             }
+        }
+        .task(id: selectedPeriod) {
+            fetchSessions()
         }
     }
 
@@ -206,7 +229,7 @@ struct StatisticsView: View {
     }
 
     private func groupSessions(by key: (Session) -> String) -> [(String, [Session])] {
-        let grouped = Dictionary(grouping: allSessions.filter { !$0.isActive }, by: key)
+        let grouped = Dictionary(grouping: sessionsInRange, by: key)
         return grouped.sorted { lhs, rhs in
             lhs.key > rhs.key
         }
@@ -286,7 +309,7 @@ private struct SummaryCard: View {
 
 struct BarChartView: View {
     struct DataPoint: Identifiable {
-        let id = UUID()
+        var id: String { label }
         let label: String
         let value: Double
         let ratio: Double

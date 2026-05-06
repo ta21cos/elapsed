@@ -215,4 +215,44 @@ final class SessionManagerTests: XCTestCase {
         XCTAssertEqual(session?.endTime, lastActiveTime)
         XCTAssertEqual(session?.activeSeconds, 360)
     }
+
+    func testUpdateSessionDoesNotMutatePersistedActiveSeconds() {
+        sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
+        let session = sut.currentSession
+
+        clock.advance(by: 120)
+        sut.updateSession()
+
+        XCTAssertEqual(sut.currentSessionSeconds, 180)
+        XCTAssertEqual(session?.activeSeconds, 0, "updateSession should not write to SwiftData; activeSeconds is finalized only at endCurrentSession")
+    }
+
+    func testOnSessionTickFiresWithCurrentSeconds() {
+        var ticked: [Int] = []
+        sut.onSessionTick = { seconds in
+            ticked.append(seconds)
+        }
+
+        sut.handleActivityChange(.active)
+        clock.advance(by: 60)
+        sut.confirmSession()
+
+        clock.advance(by: 30)
+        sut.updateSession()
+        clock.advance(by: 30)
+        sut.updateSession()
+
+        XCTAssertEqual(ticked, [90, 120])
+    }
+
+    func testOnSessionTickNotFiredWithoutCurrentSession() {
+        var tickCount = 0
+        sut.onSessionTick = { _ in tickCount += 1 }
+
+        sut.updateSession()
+
+        XCTAssertEqual(tickCount, 0)
+    }
 }
