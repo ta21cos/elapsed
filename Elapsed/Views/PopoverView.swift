@@ -1,27 +1,10 @@
 import SwiftUI
-import SwiftData
 
 struct PopoverView: View {
     @Environment(SessionManager.self) private var sessionManager
     @Environment(BreakReminderService.self) private var breakService
     @Environment(AppSettings.self) private var settings
     @Environment(\.openWindow) private var openWindow
-    @Query private var todaySessions: [Session]
-
-    init() {
-        let todayStart = Calendar.current.startOfDay(for: Date())
-        _todaySessions = Query(
-            filter: #Predicate<Session> { $0.startTime >= todayStart },
-            sort: \Session.startTime,
-            order: .reverse
-        )
-    }
-
-    private static let timeFormat: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "HH:mm"
-        return f
-    }()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -40,10 +23,6 @@ struct PopoverView: View {
                 StatsView(summary: summary)
                 Divider()
             }
-
-            todaySessionList
-
-            Divider()
 
             controlButtons
         }
@@ -81,6 +60,14 @@ struct PopoverView: View {
 
             Spacer()
 
+            Button("履歴") {
+                openWindow(id: "session-detail")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+            }
+            .accessibilityLabel("セッション履歴を開く")
+
             SettingsLink {
                 Text("設定")
             }
@@ -91,68 +78,6 @@ struct PopoverView: View {
             }
             .accessibilityLabel("アプリを終了")
         }
-    }
-
-    // MARK: - Today Sessions
-
-    @ViewBuilder
-    private var todaySessionList: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text("今日のセッション")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Button("履歴") {
-                    openWindow(id: "session-detail")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        NSApp.activate(ignoringOtherApps: true)
-                    }
-                }
-                .font(.caption)
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-            }
-
-            if todaySessions.isEmpty {
-                Text("セッションなし")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            } else {
-                ForEach(todaySessions) { session in
-                    sessionRow(session)
-                }
-            }
-        }
-    }
-
-    private func sessionRow(_ session: Session) -> some View {
-        let displaySeconds = session.isActive
-            ? sessionManager.currentSessionSeconds
-            : session.activeSeconds
-
-        return HStack(spacing: 4) {
-            Image(systemName: session.isActive ? "circle.fill" : "circle.fill")
-                .font(.system(size: 6))
-                .foregroundStyle(session.isActive ? .red : .green)
-
-            Text(Self.timeFormat.string(from: session.startTime))
-                .monospacedDigit()
-
-            Text("→")
-
-            if let end = session.endTime {
-                Text(Self.timeFormat.string(from: end))
-                    .monospacedDigit()
-            } else {
-                Text("進行中")
-                    .foregroundStyle(.red)
-            }
-
-            Text("(\(displaySeconds / 60)分)")
-                .foregroundStyle(.secondary)
-        }
-        .font(.caption)
     }
 
     // MARK: - Computed Properties

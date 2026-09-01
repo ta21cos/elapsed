@@ -4,7 +4,7 @@ import SwiftData
 struct StatisticsView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedPeriod: Period = .day
-    @State private var sessionsInRange: [Session] = []
+    @State private var buckets: [Bucket] = []
 
     enum Period: String, CaseIterable {
         case day = "日"
@@ -24,13 +24,14 @@ struct StatisticsView: View {
         }
     }
 
-    private func fetchSessions() {
+    private func reloadBuckets() {
         let cutoff = cutoffDate(for: selectedPeriod)
-        let descriptor = FetchDescriptor<Session>(
-            predicate: #Predicate<Session> { $0.startTime >= cutoff && !$0.isActive },
-            sortBy: [SortDescriptor(\.startTime, order: .reverse)]
+        var descriptor = FetchDescriptor<Session>(
+            predicate: #Predicate<Session> { $0.startTime >= cutoff && !$0.isActive }
         )
-        sessionsInRange = (try? modelContext.fetch(descriptor)) ?? []
+        descriptor.propertiesToFetch = [\.startTime, \.activeSeconds]
+        let sessions = (try? modelContext.fetch(descriptor)) ?? []
+        buckets = Self.aggregateBuckets(from: sessions, period: selectedPeriod)
     }
 
     var body: some View {
@@ -58,7 +59,7 @@ struct StatisticsView: View {
             }
         }
         .task(id: selectedPeriod) {
-            fetchSessions()
+            reloadBuckets()
         }
     }
 
@@ -121,7 +122,7 @@ struct StatisticsView: View {
             Text("詳細")
                 .font(.headline)
 
-            ForEach(buckets.prefix(20), id: \.label) { bucket in
+            ForEach(buckets, id: \.label) { bucket in
                 HStack {
                     Text(bucket.label)
                         .font(.system(.body, design: .monospaced))
@@ -145,7 +146,7 @@ struct StatisticsView: View {
                 }
                 .padding(.vertical, 4)
 
-                if bucket.label != buckets.prefix(20).last?.label {
+                if bucket.label != buckets.last?.label {
                     Divider()
                 }
             }
@@ -169,44 +170,54 @@ struct StatisticsView: View {
         let averagePerDay: Int
     }
 
-    private var buckets: [Bucket] {
+    private static func aggregateBuckets(from sessions: [Session], period: Period) -> [Bucket] {
         let calendar = Calendar.current
-        let now = Date()
 
-        let grouped: [(String, [Session])]
-        let limit: Int
-
-        switch selectedPeriod {
-        case .day:
-            limit = 14
-            grouped = groupSessions(by: { session in
-                let df = Self.dayFormatter
-                return df.string(from: session.startTime)
-            })
-        case .week:
-            limit = 12
-            grouped = groupSessions(by: { session in
-                let comps = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: session.startTime)
-                let weekStart = calendar.date(from: comps) ?? session.startTime
-                return Self.weekFormatter.string(from: weekStart)
-            })
-        case .month:
-            limit = 12
-            grouped = groupSessions(by: { session in
-                Self.monthFormatter.string(from: session.startTime)
-            })
+        func bucketStart(of date: Date) -> Date {
+            switch period {
+            case .day:
+                return calendar.startOfDay(for: date)
+            case .week:
+                let comps = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            case .month:
+                let comps = calendar.dateComponents([.year, .month], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            }
         }
 
-        let limited = Array(grouped.prefix(limit))
-        let maxSeconds = limited.map { $0.1.reduce(0) { $0 + $1.activeSeconds } }.max() ?? 1
+        var totals: [Date: (seconds: Int, count: Int)] = [:]
+        for session in sessions {
+            let key = bucketStart(of: session.startTime)
+            var entry = totals[key] ?? (0, 0)
+            entry.seconds += session.activeSeconds
+            entry.count += 1
+            totals[key] = entry
+        }
 
-        return limited.map { label, sessions in
-            let total = sessions.reduce(0) { $0 + $1.activeSeconds }
-            return Bucket(
-                label: label,
-                totalSeconds: total,
-                sessionCount: sessions.count,
-                ratio: Double(total) / Double(max(maxSeconds, 1))
+        let limit: Int
+        let formatter: DateFormatter
+        switch period {
+        case .day:
+            limit = 14
+            formatter = dayFormatter
+        case .week:
+            limit = 12
+            formatter = weekFormatter
+        case .month:
+            limit = 12
+            formatter = monthFormatter
+        }
+
+        let limited = totals.sorted { $0.key > $1.key }.prefix(limit)
+        let maxSeconds = max(limited.map(\.value.seconds).max() ?? 1, 1)
+
+        return limited.map { start, entry in
+            Bucket(
+                label: formatter.string(from: start),
+                totalSeconds: entry.seconds,
+                sessionCount: entry.count,
+                ratio: Double(entry.seconds) / Double(maxSeconds)
             )
         }
     }
@@ -226,13 +237,6 @@ struct StatisticsView: View {
         Array(buckets.reversed().suffix(14).map {
             BarChartView.DataPoint(label: shortLabel($0.label), value: Double($0.totalSeconds), ratio: $0.ratio)
         })
-    }
-
-    private func groupSessions(by key: (Session) -> String) -> [(String, [Session])] {
-        let grouped = Dictionary(grouping: sessionsInRange, by: key)
-        return grouped.sorted { lhs, rhs in
-            lhs.key > rhs.key
-        }
     }
 
     private func shortLabel(_ label: String) -> String {
