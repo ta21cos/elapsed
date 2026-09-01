@@ -44,11 +44,21 @@ echo "==> Releasing Elapsed v$rel_version"
 
 # --- 1. Update Info.plist version ---
 
-echo "==> Updating Info.plist version to $rel_version"
-/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $rel_version" "$repo_root/Elapsed/Info.plist"
 # Sparkle compares CFBundleVersion (sparkle:version) to decide whether to offer
-# an update, so it must increase every release. Reuse the marketing version.
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $rel_version" "$repo_root/Elapsed/Info.plist"
+# an update, so it must increase every release. It cannot reuse the marketing
+# version: installs from the old CI workflow carry run-number build versions
+# (e.g. "3"), which the standard comparator ranks above "1.0.x". Encode the
+# version as a single integer instead: major*10000 + minor*100 + patch.
+set -l ver_parts (string split . $rel_version)
+if test (count $ver_parts) -ne 3
+    echo "Error: version must be MAJOR.MINOR.PATCH (got: $rel_version)"
+    exit 1
+end
+set -l build_number (math "$ver_parts[1] * 10000 + $ver_parts[2] * 100 + $ver_parts[3]")
+
+echo "==> Updating Info.plist version to $rel_version (build $build_number)"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $rel_version" "$repo_root/Elapsed/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $build_number" "$repo_root/Elapsed/Info.plist"
 
 # --- 2. Build ---
 
