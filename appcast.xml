@@ -2,13 +2,5 @@
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <title>Elapsed</title>
-        <item>
-            <title>4.1.2</title>
-            <pubDate>Sun, 08 Mar 2026 17:50:12 +0900</pubDate>
-            <sparkle:version>1</sparkle:version>
-            <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/ta21cos/elapsed/main/Elapsed-1.0.4.zip" length="2006591" type="application/octet-stream" sparkle:edSignature="9qdMzmfpwelRbBQp3lHz38IVLFHW9vVQid/XUFALTRmqNSSdBqMN2tXu3sQLAf+uFueShlFNguEQbRdD1HUXDQ=="/>
-        </item>
     </channel>
 </rss>

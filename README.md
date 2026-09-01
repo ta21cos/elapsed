@@ -139,16 +139,14 @@ Use the release script:
 
 The script performs these steps:
 
-1. Update `Info.plist` version
+1. Update `Info.plist` versions (`CFBundleShortVersionString` and `CFBundleVersion`)
 2. Build Release (universal binary)
 3. Re-sign `.app` with ad-hoc identity (required for embedded Sparkle framework)
 4. Create ZIP
 5. Sign ZIP with EdDSA (Sparkle update signature)
-6. Generate/update `appcast.xml`
-7. Commit `appcast.xml`, create git tag, push
-8. Create GitHub Draft Release with the ZIP attached
-
-After the script finishes, go to [Releases](https://github.com/ta21cos/elapsed/releases) to review and publish the draft.
+6. Generate/update `appcast.xml` (enclosure URL points at the GitHub Release asset)
+7. Commit `appcast.xml` + `Info.plist`, create git tag, push
+8. Create and publish the GitHub Release with the ZIP attached
 
 ### Auto-update (Sparkle)
 
@@ -160,7 +158,8 @@ After the script finishes, go to [Releases](https://github.com/ta21cos/elapsed/r
 ### CI/CD
 
 - **CI** (`ci.yml`): Runs on push to `main` and PRs. Builds Debug + runs tests.
-- **Release** (`release.yml`): Triggered by `v*` tags. Builds Release, re-signs, creates ZIP, publishes Draft Release on GitHub.
+
+Releases are created only by `scripts/release.fish` (run locally, because the EdDSA private key lives in the local Keychain). There is intentionally no release workflow: a CI-built ZIP would differ from the locally signed one, so its EdDSA signature in `appcast.xml` would not match and Sparkle would reject the update.
 
 ### Code signing
 
