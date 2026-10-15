@@ -3,6 +3,14 @@
     <channel>
         <title>Elapsed</title>
         <item>
+            <title>1.1.0</title>
+            <pubDate>Thu, 15 Oct 2026 21:26:40 +0900</pubDate>
+            <sparkle:version>10100</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/ta21cos/elapsed/releases/download/v1.1.0/Elapsed-1.1.0.zip" length="2081858" type="application/octet-stream" sparkle:edSignature="r3hk0EzMqVYxvetmPZoyXZWj3+C5aYUXZSSfyMeKTjf1o+TIYyEr1RQDEXlbhsdG9mGnPx1O1dIOH9k36XgBBA=="/>
+        </item>
+        <item>
             <title>1.0.6</title>
             <pubDate>Tue, 01 Sep 2026 20:03:53 +0900</pubDate>
             <sparkle:version>10006</sparkle:version>
