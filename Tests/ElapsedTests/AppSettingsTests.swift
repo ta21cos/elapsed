@@ -13,6 +13,7 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.snoozeDurationMinutes, Constants.Defaults.snoozeDurationMinutes)
         XCTAssertTrue(settings.soundEnabled)
         XCTAssertFalse(settings.hasCompletedOnboarding)
+        XCTAssertTrue(settings.perfLoggingEnabled)
     }
 
     func testPersistsChanges() {

@@ -32,11 +32,13 @@ struct MenuBarLabel: View {
     let title: String
 
     var body: some View {
+        let _ = PerfMetrics.shared.count(.bodyMenuBarLabel)
         Image(nsImage: MenuBarImageCache.shared.image(icon: icon, title: title))
     }
 }
 
 private func renderMenuBarImage(icon: String, title: String) -> NSImage {
+    PerfMetrics.shared.count(.imageRender)
     let fontSize: CGFloat = 12
     let iconTextSpacing: CGFloat = 3
     let baselineOffset: CGFloat = 0

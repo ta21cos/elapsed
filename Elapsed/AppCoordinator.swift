@@ -12,8 +12,12 @@ final class AppCoordinator {
     let activityMonitor: ActivityMonitorService
     let breakReminder: BreakReminderService
 
-    private(set) var currentMenuBarIcon: String = Constants.Icon.activeNormal
-    private(set) var currentMenuBarTitle: String = ""
+    private(set) var currentMenuBarIcon: String = Constants.Icon.activeNormal {
+        didSet { PerfMetrics.shared.count(.assignMenuBarIcon) }
+    }
+    private(set) var currentMenuBarTitle: String = "" {
+        didSet { PerfMetrics.shared.count(.assignMenuBarTitle) }
+    }
     private var iconUpdateTimer: Timer?
     private var activityToken: NSObjectProtocol?
     private var hasStarted = false
@@ -48,6 +52,7 @@ final class AppCoordinator {
         setupActivityCallbacks()
         setupSessionTickCallback()
         startIconUpdate()
+        startPerfMetrics()
 
         startIfNeeded()
     }
@@ -62,6 +67,7 @@ final class AppCoordinator {
     }
 
     func startMonitoring() {
+        PerfMetrics.shared.count(.startMonitoring)
         activityToken = ProcessInfo.processInfo.beginActivity(
             options: [.userInitiated, .idleSystemSleepDisabled],
             reason: "Monitoring user activity for time tracking"
@@ -101,9 +107,24 @@ final class AppCoordinator {
             withTimeInterval: 1.0,
             repeats: true
         ) { [weak self] _ in
+            PerfMetrics.shared.count(.timerIcon)
             self?.updateMenuBarIcon()
         }
         iconUpdateTimer?.tolerance = 0.1
+    }
+
+    private func startPerfMetrics() {
+        let context = modelContainer.mainContext
+        PerfMetrics.shared.registerGauge("sessions.total") {
+            Double((try? context.fetchCount(FetchDescriptor<Session>())) ?? -1)
+        }
+        // debugMode はメニューバーのタイトルにアイドル秒数を毎秒表示し、計測対象の再描画回数を変えてしまうため、別の設定で有効にする
+        PerfMetrics.shared.start(
+            interval: Constants.Polling.perfReportIntervalSeconds,
+            writer: PerfCSVWriter()
+        ) { [weak self] in
+            self?.settings.perfLoggingEnabled == true
+        }
     }
 
     private func updateMenuBarIcon() {

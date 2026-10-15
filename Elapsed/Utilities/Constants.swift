@@ -4,6 +4,11 @@ enum Constants {
     enum Polling {
         static let intervalSeconds: TimeInterval = 10.0
         static let streakUpdateIntervalSeconds: TimeInterval = 1.0
+        static let perfReportIntervalSeconds: TimeInterval = 300.0
+    }
+
+    enum Perf {
+        static let loggingEnabledKey = "perfLogging"
     }
 
     enum Notification {

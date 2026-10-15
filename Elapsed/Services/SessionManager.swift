@@ -137,6 +137,7 @@ final class SessionManager {
             withTimeInterval: Constants.Polling.streakUpdateIntervalSeconds,
             repeats: true
         ) { [weak self] _ in
+            PerfMetrics.shared.count(.timerSession)
             self?.updateSession()
         }
         updateTimer?.tolerance = 0.5

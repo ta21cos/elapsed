@@ -100,11 +100,46 @@ struct GeneralSettingsView: View {
             } header: {
                 Text("通知")
             }
+
+            Section {
+                SettingsRow(icon: "gauge.with.dots.needle.33percent", iconColor: .orange) {
+                    Toggle("性能ログを記録", isOn: $settings.perfLoggingEnabled)
+                }
+
+                Button {
+                    revealPerfLog()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Label("性能ログ（CSV）を Finder で表示", systemImage: "folder")
+                        Spacer()
+                    }
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.blue)
+            } header: {
+                Text("診断")
+            } footer: {
+                Text("5 分ごとに CPU 使用率と処理回数を記録します。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         .task { await refreshNotificationStatus() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             Task { await refreshNotificationStatus() }
+        }
+    }
+
+    private func revealPerfLog() {
+        let fileURL = PerfCSVWriter.defaultFileURL
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+        } else {
+            let directory = fileURL.deletingLastPathComponent()
+            try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            NSWorkspace.shared.open(directory)
         }
     }
 

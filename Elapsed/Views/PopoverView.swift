@@ -7,6 +7,7 @@ struct PopoverView: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
+        let _ = PerfMetrics.shared.count(.bodyPopover)
         VStack(alignment: .leading, spacing: 12) {
             statusHeader
 
