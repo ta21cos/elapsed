@@ -52,6 +52,7 @@ final class ActivityMonitorService {
             withTimeInterval: Constants.Polling.intervalSeconds,
             repeats: true
         ) { [weak self] _ in
+            PerfMetrics.shared.count(.timerPolling)
             self?.evaluateActivity()
         }
         pollingTimer?.tolerance = 2.0

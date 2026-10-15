@@ -13,6 +13,7 @@ struct ElapsedApp: App {
     }
 
     var body: some Scene {
+        let _ = PerfMetrics.shared.count(.bodyApp)
         MenuBarExtra {
             PopoverView()
                 .environment(appCoordinator.sessionManager)

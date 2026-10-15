@@ -17,6 +17,7 @@
 		49C8AB78719F91EA50EE5707 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442A8124AE3CC3E5379071F8 /* ProgressRingView.swift */; };
 		4A66A4A5136A90C21E4259B5 /* MenuBarIconProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F179BA0C825D5A48598E5EF /* MenuBarIconProviderTests.swift */; };
 		4B18FC9FF454C62E940C7ED4 /* MockInputEventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52566E978EFA9AAB82D167F /* MockInputEventMonitor.swift */; };
+		4C54F65C02220C30292CAB04 /* PerfCSVWriterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F192EB071BD2B49658689A /* PerfCSVWriterTests.swift */; };
 		5696232FA69181B3950F068A /* SystemStateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EE5A712288D63EAC71D26 /* SystemStateMonitor.swift */; };
 		5B51398B195391383A9833C6 /* UpdaterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05FE2EAEB0679590D295E42 /* UpdaterController.swift */; };
 		61E7417FC6852DA78877FD85 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432BB17216E566A8E27D0891 /* SessionDetailView.swift */; };
@@ -26,6 +27,7 @@
 		7AEDC970D5A538F6B326018F /* MockNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AC45AFAF69C595E8AC648F /* MockNotificationService.swift */; };
 		83B9E74487EC6AA0ED23C6F1 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 4F280151F6546635B7A8B288 /* Sparkle */; };
 		88DAE9DC09622382C30B1DE0 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5317E6810335E0AF7617C746 /* TestHelpers.swift */; };
+		88E1FD298E9535A02EB96FBF /* PerfMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A06CB9FD00F84AC5E8427E /* PerfMetrics.swift */; };
 		8BF72A2F493D8079A750F4A9 /* ActivityMonitorServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CAE205628D03C074DCDD35 /* ActivityMonitorServiceTests.swift */; };
 		8F9189680E3E5D0E076FD868 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6028D8E9E549BC8B330DD430 /* SettingsView.swift */; };
 		95A4A8F5C9BF44750FAC68BC /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3AC1286ECA685DAD23586A /* PermissionManager.swift */; };
@@ -35,6 +37,7 @@
 		B0B20C8BF9B5D90D8067DC2F /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398BD36AD2AB85D43813B243 /* Session.swift */; };
 		BA8E12A4889FDD0E743201E3 /* ActivityMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE08D82ABA74E46A23E70371 /* ActivityMonitorService.swift */; };
 		C01A640958AC618688BE1D95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31C0095CFB14C419099FE359 /* Assets.xcassets */; };
+		C5992C7E84D38F3ED8B7535C /* PerfMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FEC66A95A5949A2960D349 /* PerfMetricsTests.swift */; };
 		CF0D32E66E4E332174BABEA1 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099231A8B441EB5553D3EBC2 /* PopoverView.swift */; };
 		D07F4E508122AD626519B2DF /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573AE4D152F3C3FFE6AB67AA /* AppSettingsTests.swift */; };
 		DCB32731C374896E6C7536C9 /* InputEventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CBB09EDEBE66A5F27AC259 /* InputEventMonitor.swift */; };
@@ -63,6 +66,7 @@
 		0E723AB40B0BA308FC988960 /* Elapsed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Elapsed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		113C74B744C82CC1D8EAA2CE /* BreakReminderServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakReminderServiceTests.swift; sourceTree = "<group>"; };
 		31C0095CFB14C419099FE359 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		33FEC66A95A5949A2960D349 /* PerfMetricsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfMetricsTests.swift; sourceTree = "<group>"; };
 		398BD36AD2AB85D43813B243 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		3E80CCF91B84B45C3F32D802 /* TestClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestClock.swift; sourceTree = "<group>"; };
 		432BB17216E566A8E27D0891 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
@@ -75,6 +79,7 @@
 		52CAE205628D03C074DCDD35 /* ActivityMonitorServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityMonitorServiceTests.swift; sourceTree = "<group>"; };
 		5317E6810335E0AF7617C746 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		573AE4D152F3C3FFE6AB67AA /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
+		57F192EB071BD2B49658689A /* PerfCSVWriterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfCSVWriterTests.swift; sourceTree = "<group>"; };
 		59C781E17458BF48F6B33B7B /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		5A1416F190EEADD2DA66D51A /* Clock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		6028D8E9E549BC8B330DD430 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -83,6 +88,7 @@
 		697A7EE27ECB48C332EB7F43 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		7A3AC1286ECA685DAD23586A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		7BE63F09DFAFE1BBF9732EA5 /* SessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManagerTests.swift; sourceTree = "<group>"; };
+		88A06CB9FD00F84AC5E8427E /* PerfMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfMetrics.swift; sourceTree = "<group>"; };
 		8AD581CA72B69780DBF6CCA8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		96BC2AAA8D548E7D2F84526B /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
 		9905BE3044FADA88675380B3 /* Elapsed.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Elapsed.entitlements; sourceTree = "<group>"; };
@@ -191,6 +197,8 @@
 				573AE4D152F3C3FFE6AB67AA /* AppSettingsTests.swift */,
 				113C74B744C82CC1D8EAA2CE /* BreakReminderServiceTests.swift */,
 				9F179BA0C825D5A48598E5EF /* MenuBarIconProviderTests.swift */,
+				57F192EB071BD2B49658689A /* PerfCSVWriterTests.swift */,
+				33FEC66A95A5949A2960D349 /* PerfMetricsTests.swift */,
 				7BE63F09DFAFE1BBF9732EA5 /* SessionManagerTests.swift */,
 				A6597FC49E89379B66F194EB /* TimeFormatterTests.swift */,
 				6868F95950B2DA46D0F76522 /* Helpers */,
@@ -205,6 +213,7 @@
 			children = (
 				5A1416F190EEADD2DA66D51A /* Clock.swift */,
 				45A7DEB151BC1D98A48EA65C /* Constants.swift */,
+				88A06CB9FD00F84AC5E8427E /* PerfMetrics.swift */,
 				96BC2AAA8D548E7D2F84526B /* TimeFormatter.swift */,
 			);
 			path = Utilities;
@@ -347,6 +356,7 @@
 				7814B2DB9F13927222813F45 /* MenuBarView.swift in Sources */,
 				262AF0720B4EAEDFF961FA6F /* NotificationService.swift in Sources */,
 				A06B9A5E25716E4938F75A4D /* OnboardingView.swift in Sources */,
+				88E1FD298E9535A02EB96FBF /* PerfMetrics.swift in Sources */,
 				95A4A8F5C9BF44750FAC68BC /* PermissionManager.swift in Sources */,
 				CF0D32E66E4E332174BABEA1 /* PopoverView.swift in Sources */,
 				49C8AB78719F91EA50EE5707 /* ProgressRingView.swift in Sources */,
@@ -373,6 +383,8 @@
 				4B18FC9FF454C62E940C7ED4 /* MockInputEventMonitor.swift in Sources */,
 				7AEDC970D5A538F6B326018F /* MockNotificationService.swift in Sources */,
 				15FBEFD707DF5106015862A8 /* MockSystemStateMonitor.swift in Sources */,
+				4C54F65C02220C30292CAB04 /* PerfCSVWriterTests.swift in Sources */,
+				C5992C7E84D38F3ED8B7535C /* PerfMetricsTests.swift in Sources */,
 				AA3FD7EFA0DEC2FEA58732C0 /* SessionManagerTests.swift in Sources */,
 				FC0CFEB132CAD234BCBDB2A3 /* TestClock.swift in Sources */,
 				88DAE9DC09622382C30B1DE0 /* TestHelpers.swift in Sources */,

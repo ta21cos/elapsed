@@ -34,6 +34,9 @@ final class AppSettings {
     var showSeconds: Bool {
         didSet { defaults.set(showSeconds, forKey: "showSeconds") }
     }
+    var perfLoggingEnabled: Bool {
+        didSet { defaults.set(perfLoggingEnabled, forKey: Constants.Perf.loggingEnabledKey) }
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -70,5 +73,8 @@ final class AppSettings {
         self.showSeconds = has("showSeconds")
             ? d.bool(forKey: "showSeconds")
             : false
+        self.perfLoggingEnabled = has(Constants.Perf.loggingEnabledKey)
+            ? d.bool(forKey: Constants.Perf.loggingEnabledKey)
+            : true
     }
 }

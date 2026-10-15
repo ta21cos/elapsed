@@ -53,18 +53,22 @@ final class SystemStateMonitor: SystemStateMonitoring {
     }
 
     @objc private func handleScreenLock() {
+        PerfMetrics.shared.count(.eventLock)
         emit(.screenLocked)
     }
 
     @objc private func handleScreenUnlock() {
+        PerfMetrics.shared.count(.eventUnlock)
         emit(.screenUnlocked)
     }
 
     @objc private func handleSleep() {
+        PerfMetrics.shared.count(.eventSleep)
         emit(.systemSleep)
     }
 
     @objc private func handleWake() {
+        PerfMetrics.shared.count(.eventWake)
         emit(.systemWake)
     }
 
