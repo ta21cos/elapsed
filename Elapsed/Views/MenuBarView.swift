@@ -84,6 +84,24 @@ private func renderMenuBarImage(icon: String, title: String) -> NSImage {
     return image
 }
 
+enum MenuBarTitleProvider {
+    static func title(
+        hasActiveSession: Bool,
+        sessionSeconds: Int,
+        showSeconds: Bool,
+        debugMode: Bool,
+        idleSeconds: TimeInterval
+    ) -> String {
+        let debugSuffix = idleSeconds < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idleSeconds))s"
+
+        guard hasActiveSession else {
+            return debugMode ? debugSuffix : ""
+        }
+        let duration = TimeFormatter.compactDuration(sessionSeconds, showSeconds: showSeconds)
+        return debugMode ? "\(duration) \(debugSuffix)" : duration
+    }
+}
+
 enum MenuBarIconProvider {
     static func warningThresholdSeconds(workDurationMinutes: Int) -> Int {
         let buffer = min(Constants.Defaults.warningBufferMinutes, workDurationMinutes - 1)

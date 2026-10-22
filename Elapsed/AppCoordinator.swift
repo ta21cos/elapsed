@@ -127,28 +127,28 @@ final class AppCoordinator {
         }
     }
 
+    /// `@Observable` は同じ値の代入でも変更を通知し、`ElapsedApp.body` を毎秒作り直してしまうため、値が変わったときだけ代入する
     private func updateMenuBarIcon() {
-        currentMenuBarIcon = MenuBarIconProvider.icon(
+        let icon = MenuBarIconProvider.icon(
             breakState: breakReminder.breakState,
             activityState: activityMonitor.state,
             isTracking: sessionManager.isTracking,
             sessionSeconds: sessionManager.currentSessionSeconds,
             workDurationMinutes: settings.workDurationMinutes
         )
+        if icon != currentMenuBarIcon {
+            currentMenuBarIcon = icon
+        }
 
-        if sessionManager.isTracking, sessionManager.currentSession != nil {
-            var title = TimeFormatter.compactDuration(sessionManager.currentSessionSeconds, showSeconds: settings.showSeconds)
-            if settings.debugMode {
-                let idle = activityMonitor.idleSeconds
-                let debugSuffix = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
-                title += " \(debugSuffix)"
-            }
+        let title = MenuBarTitleProvider.title(
+            hasActiveSession: sessionManager.isTracking && sessionManager.currentSession != nil,
+            sessionSeconds: sessionManager.currentSessionSeconds,
+            showSeconds: settings.showSeconds,
+            debugMode: settings.debugMode,
+            idleSeconds: activityMonitor.idleSeconds
+        )
+        if title != currentMenuBarTitle {
             currentMenuBarTitle = title
-        } else if settings.debugMode {
-            let idle = activityMonitor.idleSeconds
-            currentMenuBarTitle = idle < Constants.Polling.intervalSeconds ? "●" : "○\(Int(idle))s"
-        } else {
-            currentMenuBarTitle = ""
         }
     }
 }

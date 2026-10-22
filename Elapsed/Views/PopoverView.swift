@@ -5,6 +5,8 @@ struct PopoverView: View {
     @Environment(BreakReminderService.self) private var breakService
     @Environment(AppSettings.self) private var settings
     @Environment(\.openWindow) private var openWindow
+    // 閉じている間に `currentSessionSeconds` を読むと、Observation の依存が残って毎秒再評価されるため、表示中だけ読む
+    @State private var isVisible = true
 
     var body: some View {
         let _ = PerfMetrics.shared.count(.bodyPopover)
@@ -14,7 +16,7 @@ struct PopoverView: View {
             Divider()
 
             WorkProgressView(
-                elapsed: TimeInterval(sessionManager.currentSessionSeconds),
+                elapsed: TimeInterval(isVisible ? sessionManager.currentSessionSeconds : 0),
                 total: TimeInterval(settings.workDurationMinutes * 60)
             )
 
@@ -29,6 +31,7 @@ struct PopoverView: View {
         }
         .padding()
         .frame(width: 300)
+        .background(WindowVisibilityReader { isVisible = $0 })
     }
 
     // MARK: - Subviews
@@ -108,6 +111,7 @@ struct PopoverView: View {
         if !sessionManager.isTracking { return "監視は停止しています" }
         if breakService.breakState == .reminderSent { return "長時間作業しています" }
         if sessionManager.currentSession != nil {
+            guard isVisible else { return "" }
             let remaining = breakService.timeUntilBreak
             if remaining > 0 {
                 return "休憩まで \(TimeFormatter.formatDuration(Int(remaining)))"
