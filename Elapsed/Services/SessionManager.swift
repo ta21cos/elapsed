@@ -17,10 +17,11 @@ final class SessionManager {
 
     var onSessionTick: ((Int) -> Void)?
 
-    private var updateTimer: Timer?
-    private var pendingStartTime: Date?
-    private var confirmationTimer: Timer?
-    private var lastUpdateTime: Date?
+    // 表示に使わない内部状態まで Observation が追跡すると、毎秒の更新が無駄な変更通知になるため除外する
+    @ObservationIgnored private var updateTimer: Timer?
+    @ObservationIgnored private var pendingStartTime: Date?
+    @ObservationIgnored private var confirmationTimer: Timer?
+    @ObservationIgnored private var lastUpdateTime: Date?
 
     init(modelContext: ModelContext, settings: AppSettings, clock: Clock = SystemClock()) {
         self.modelContext = modelContext
