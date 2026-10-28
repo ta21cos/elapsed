@@ -107,8 +107,8 @@ sqlite3 ~/Library/Application\ Support/default.store \
    ```bash
    mkdir -p .sparkle-tools
    cd .sparkle-tools
-   gh release download 2.9.0 -R sparkle-project/Sparkle -p 'Sparkle-2.9.0.tar.xz'
-   tar xf Sparkle-2.9.0.tar.xz
+   gh release download 2.10.1 -R sparkle-project/Sparkle -p 'Sparkle-2.10.1.tar.xz'
+   tar xf Sparkle-2.10.1.tar.xz
    cd ..
    ```
 
