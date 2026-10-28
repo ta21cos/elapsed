@@ -7,7 +7,7 @@ set -l release_dir "$build_dir/Build/Products/Release"
 
 if not test -x "$sparkle_bin/sign_update"
     echo "Error: Sparkle tools not found at $sparkle_bin"
-    echo "Download from: gh release download 2.9.0 -R sparkle-project/Sparkle -p 'Sparkle-*.tar.xz'"
+    echo "Download from: gh release download 2.10.1 -R sparkle-project/Sparkle -p 'Sparkle-*.tar.xz'"
     exit 1
 end
 
